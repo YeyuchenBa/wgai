@@ -1,5 +1,5 @@
 # 简介
-
+> [<span style="color: red;">@官方文档</span>](http://116.198.227.105/#/)
 > 开箱即用的JAVA AI平台融合了AI图像识别opencv、yolo、esayAI内核识别;AI智能客服、AI语言模型、可定制化自主离线化部署并自主化行业化使用
 避免占用内存、GPU消耗训练与识别分开使用;支持yolov3、yolov5、yolov8模型 支持exel、txt等文本语言模型；
 
@@ -8,9 +8,9 @@
 ## 下载即可使用 
 > springboot+vue+mysql 支持国产化数据库 配置内容不再详细赘述 如果java 薄弱建议先学习java 再来使用
 
-> [<span style="color: red;">@gitee仓库地址</span>](https://gitee.com/dromara/easyAi)
+> [<span style="color: red;">@gitee仓库地址</span>](https://gitee.com/wggh_admin/wgai)
 
->[<span style="color: red;">@github仓库地址</span>](https://gitee.com/dromara/easyAi)
+>[<span style="color: red;">@github仓库地址</span>](https://github.com/YeyuchenBa/wgai)
 
 # 功能截图和功能介绍配置
 
