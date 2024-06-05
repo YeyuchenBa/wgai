@@ -5,7 +5,7 @@
 
 # 直接上手
 
-## 下载即可使用
+## 下载即可使用 
 > springboot+vue+mysql 支持国产化数据库 配置内容不再详细赘述 如果java 薄弱建议先学习java 再来使用
 
 > [<span style="color: red;">@gitee仓库地址</span>](https://gitee.com/dromara/easyAi)
@@ -16,27 +16,27 @@
 
 ## - 自主图片视频识别
 
-###  首页
+###  首页       
 >监管redis、jvm、服务器cpu 主要是cpu 尤为重要.
 
 ![index](./index.jpg)
 
-###  模型库
+###  模型库     
 >自主添加训练好的模型,训练模型与识别是分开的,避免占用内存.
 
 ![model](./model.jpg)
 
-### 模型库绑定
+### 模型库绑定     
 >支持图片上传、图片地址、视频地址、rtsp、rtmp、flv、fmp4、不支持静态mp4播放 但支持识别 因为播放器控件不允许静态文件播放
 
 ![modelBund](./modelBund.jpg)
-### 图片识别
+### 图片识别 
 >支持第三方接口传递 识别耗时基本在1秒以内除特殊复杂问题之外 耗时单位目前为ms
 
 ![modelBund](./start.gif)
 
-###  视频识别
->支持第三方接口传递 开启后一直识别不会中断 子线程cpu奔跑需要一定内存量
+###  视频识别 
+>支持第三方接口传递 开启后一直识别不会中断 子线程cpu奔跑需要一定内存量 
 
 ![modelBund](./startplay.gif)
 
@@ -50,15 +50,15 @@
 
 ## - 自主智能聊天、ChatGpt
 ### chatGPT
-> 支持exel、txt等文本语言模型；场景化特定训练
+> 支持exel、txt等文本语言模型；场景化特定训练 
 
 ![dingyue](./chatplay.gif)
 
 
-## - 轻量级内核轻训练
+## - 轻量级内核轻训练 
 
 > 这个轻量级主要是使用的easyui内核  [<span style="color: red;">@easyAi轻量级内核地址</span>](https://gitee.com/dromara/easyAi) 他们有自己的内容训练内存消耗少训练时间短面对特定识别内容效率很高
-> 由于时间有限暂未完全接入需要的同学可自主继续接入
+> 由于时间有限暂未完全接入需要的同学可自主继续接入 
 
 ### 图片模型
 ![modelBund](./piclist.jpg)
@@ -70,7 +70,7 @@
 ## - 轻量级智能聊天
 
 > 这个轻量级主要是使用的easyui内核  [<span style="color: red;">@easyAi轻量级内核地址</span>](https://gitee.com/dromara/easyAi) 他们有自己的内容训练内存消耗少训练时间短面对特定识别内容效率很高
-> 由于时间有限暂未完全接入需要的同学可自主继续接入
+> 由于时间有限暂未完全接入需要的同学可自主继续接入 
 ### 基础分类
 ![modelBund](./jichufenlei.jpg)
 ### 语意分类
