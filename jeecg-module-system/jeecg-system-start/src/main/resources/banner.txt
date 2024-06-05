@@ -1,0 +1,17 @@
+${AnsiColor.BRIGHT_BLUE}
+
+    ___  ________  ___      ___ ________          ________  ___
+   |\  \|\   __  \|\  \    /  /|\   __  \        |\   __  \|\  \
+   \ \  \ \  \|\  \ \  \  /  / | \  \|\  \       \ \  \|\  \ \  \
+ __ \ \  \ \   __  \ \  \/  / / \ \   __  \       \ \   __  \ \  \
+|\  \\_\  \ \  \ \  \ \    / /   \ \  \ \  \       \ \  \ \  \ \  \
+\ \________\ \__\ \__\ \__/ /     \ \__\ \__\       \ \__\ \__\ \__\
+ \|________|\|__|\|__|\|__|/       \|__|\|__|        \|__|\|__|\|__|
+
+
+${AnsiColor.BRIGHT_GREEN}
+Java  Boot Version: 3.4.3
+Spring Boot Version: ${spring-boot.version}${spring-boot.formatted-version}
+OpenCV Version：3.4.1+
+JAVAAI制作人:JavaWG
+${AnsiColor.BLACK}
