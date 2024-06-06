@@ -405,7 +405,7 @@
             </activation>
             <properties>
                 <!--当前环境-->
-                <profile.name>dev</profile.name>
+                <profile.name>test</profile.name>
 				<!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
             </properties>

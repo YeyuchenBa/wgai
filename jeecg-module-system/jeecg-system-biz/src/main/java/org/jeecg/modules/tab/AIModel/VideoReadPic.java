@@ -33,7 +33,7 @@ import static org.jeecg.modules.tab.AIModel.AIModelYolo3.base64Image;
 @Slf4j
 public class VideoReadPic implements Runnable{
 
-    static String uploadpath="D:\\opt\\upFiles";
+    static String uploadpath="opt\\upFiles";
     static PushInfo pushInfo;
     static Long LastTime= 0L;
 
