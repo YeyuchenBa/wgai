@@ -3,6 +3,7 @@
 > 测试地址
 > 测试账户 wgai wgai@2024
 > [<span style="color: red;">@官方文档</span>](http://116.198.227.105:8888/)
+> 注：50元子买的服务器 跑跑就坠机建议别暴力使用
 > [<span style="color: red;">@官方文档</span>](http://116.198.227.105/#/)
 > 开箱即用的JAVA AI平台融合了AI图像识别opencv、yolo、esayAI内核识别;AI智能客服、AI语言模型、可定制化自主离线化部署并自主化行业化使用
 避免占用内存、GPU消耗训练与识别分开使用;支持yolov3、yolov5、yolov8模型 支持exel、txt等文本语言模型；
