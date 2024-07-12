@@ -1,42 +1,57 @@
 package org.jeecg.modules.tab.AIModel;
 
+import ai.onnxruntime.OnnxTensor;
+import ai.onnxruntime.OnnxValue;
+import ai.onnxruntime.OrtEnvironment;
+import ai.onnxruntime.OrtSession;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 
+import net.sourceforge.tess4j.Tesseract;
+import net.sourceforge.tess4j.TesseractException;
 import org.apache.commons.lang3.StringUtils;
+import org.bytedeco.javacv.*;
+import org.bytedeco.javacv.Frame;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.modules.demo.tab.entity.PushInfo;
-import org.jeecg.modules.demo.tab.entity.TabAiSubscription;
-import org.jeecg.modules.demo.tab.service.impl.TabAiSubscriptionServiceImpl;
+
 import org.jeecg.modules.message.websocket.WebSocket;
+
+
+import org.jeecg.modules.tab.AIModel.V5.MapTime;
+import org.jeecg.modules.tab.AIModel.V5.VideoReadInfoV5;
+import org.jeecg.modules.tab.AIModel.V5.VideoReadV5;
+import org.jeecg.modules.tab.AIModel.V5.VideoReadtestV5;
+import org.jeecg.modules.tab.util.CharRecognizer;
 import org.opencv.core.*;
+
+
 import org.opencv.core.Point;
 import org.opencv.dnn.Dnn;
 import org.opencv.dnn.Net;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
+import org.opencv.utils.Converters;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.VideoWriter;
 import org.opencv.videoio.Videoio;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
+
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Base64;
+import java.util.*;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
-import static org.opencv.highgui.HighGui.imshow;
 
 
 /**
@@ -47,7 +62,324 @@ import static org.opencv.highgui.HighGui.imshow;
 @Slf4j
 public class AIModelYolo3 {
 
+    /**
+     * 车牌识别图片
+     * @param weight
+     * @param picUrl
+     * @param saveName
+     * @param uploadpath
+     * @return
+     * @throws Exception
+     */
+    public  String SendPicOpencvCar(String weight,String picUrl,String saveName,String uploadpath) throws Exception {
+        Long a=System.currentTimeMillis();
+        Tesseract tesseract = new Tesseract();
+        // 设置 Tesseract 数据路径（包含 tessdata 文件夹）
+        tesseract.setDatapath("F:\\JAVAAI\\tessdata");
 
+        log.info("picUrl地址{}",uploadpath+ File.separator +picUrl);
+        Mat image = Imgcodecs.imread(uploadpath+ File.separator +picUrl);
+        // 加载预训练的车牌检测级联分类器
+        log.info("weight地址{}",uploadpath+ File.separator +weight);
+        CascadeClassifier plateDetector = new CascadeClassifier(uploadpath+ File.separator +weight);
+        // 检测车牌
+        MatOfRect plates = new MatOfRect();
+        plateDetector.detectMultiScale(image, plates);
+        log.info("plates.toArray()地址{}"+plates.toArray());
+        // 绘制检测到的车牌
+        for (Rect rect : plates.toArray()) {
+            // 提取车牌区域
+            Mat plate = new Mat(image, rect);
+
+            // 转换为灰度图像
+            Imgproc.cvtColor(plate, plate, Imgproc.COLOR_BGR2GRAY);
+
+            // 保存车牌区域以便 OCR 处理
+            // 保存结果图像
+            String savepath=uploadpath + File.separator + "temp" + File.separator;
+
+            if(StringUtils.isNotBlank(saveName)){
+                savepath+=saveName+".jpg";
+            }else{
+                saveName=System.currentTimeMillis()+"";
+                savepath+=saveName+".jpg";
+            }
+            log.info("保存路径: " + savepath);
+            Imgcodecs.imwrite(savepath, plate);
+
+            try {
+
+                // 识别车牌中的字符
+                String result = tesseract.doOCR(new File(savepath));
+                log.info("识别内容: " + result);
+
+                // 在原始图像上绘制边界框和识别结果
+                Imgproc.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0), 2);
+                //       Imgproc.putText(image, classNames.get(ab), new Point(box.x, box.y - 5), Core.FONT_HERSHEY_SIMPLEX, 0.5, CommonColors(c), 1);
+                Imgproc.putText(image, result, new Point(rect.x, rect.y - 10), Imgproc.FONT_HERSHEY_SIMPLEX,  0.9, new Scalar(0, 255, 0), 2);
+            } catch (TesseractException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+        String savepath=uploadpath + File.separator + "temp" + File.separator;
+
+        if(StringUtils.isNotBlank(saveName)){
+            savepath+=saveName+".jpg";
+        }else{
+            saveName=System.currentTimeMillis()+"";
+            savepath+=saveName+".jpg";
+        }
+        Imgcodecs.imwrite(savepath, image);
+        Long b=System.currentTimeMillis();
+        log.info("消耗时间："+(b-a));
+        return saveName+".jpg";
+    }
+
+    /**
+     * 车牌识别内容
+     * @param picUrl
+     * @return
+     * @throws Exception
+     */
+    public static String SendPicOpencvCarStr(String picUrl) throws Exception {
+        Tesseract tesseract = new Tesseract();
+
+        // 设置 Tesseract 数据路径（包含 tessdata 文件夹）
+        tesseract.setDatapath("F:\\JAVAAI\\tessdata");
+
+        // 设置语言为英文
+        tesseract.setLanguage("eng");
+
+
+        // 识别车牌字符
+        String result = tesseract.doOCR(new File(picUrl));
+        System.out.println("识别结果: " + result);
+        return result;
+    }
+
+    public static void main(String[] args) throws Exception {
+        //  SendPicOpencvCarStr("C:\\Users\\Administrator\\Downloads\\bb_1718101657596_1718182097476.png");
+        // System.load("F:\\JAVAAI\\opencv\\build\\java\\x64\\opencv_java3416.dll");
+        System.load("F:\\JAVAAI\\opencv481\\opencv\\build\\java\\x64\\opencv_java481.dll");
+        //   SendPicYoloV3("yolov3.weights","yolov3.cfg","coco.names","car.jpg","test","F:\\JAVAAI\\yolo3\\yuanshi");
+            SendPicYoloV5("NBplate.onnx","coco.names","writecat.jpg","","F:\\JAVAAI\\yolov5");
+    //    SendPicYoloV5Car("NBplate.onnx","coco.names","bluecar.jpg","","F:\\JAVAAI\\yolov5");
+        String rtspUrl="rtsp://admin:ch255899@192.168.0.200/Streaming/Channels/102";
+
+//        String rtspUrl = "rtsp://[用户名]:[密码]@[IP地址]:[端口]/[码流类型]";
+
+        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(rtspUrl);
+        OpenCVFrameConverter.ToMat converterToMat = new OpenCVFrameConverter.ToMat();
+        VideoWriter videoWriter = new VideoWriter();
+        try {
+            grabber.setOption("rtsp_transport", "tcp"); // 使用TCP而不是UDP
+            grabber.start();
+            System.out.println("连接到RTSP流成功");
+            Java2DFrameConverter converter = new Java2DFrameConverter();
+            Frame frame;
+            int a=0;
+
+            FrameRecorder recorder = FrameRecorder.createDefault("F:\\JAVAAI\\model\\test3\\test1.mp4", grabber.getImageWidth(), grabber.getImageHeight());
+            recorder.setVideoCodec(grabber.getVideoCodec());
+            recorder.setFormat("mp4");
+            recorder.start();
+
+            while ((frame = grabber.grab()) != null) {
+
+                // 将Frame转换为JavaCV的Mat
+                int width=frame.imageWidth;
+                int height=frame.imageHeight;
+                System.out.println("成功获取帧宽度"+width+"高度:"+height);
+                Mat opencvMat=bufferedImageToMat(   converter.getBufferedImage(frame));
+                if(a<=200){
+                    // 录制帧 b释放才会保存
+                    Frame processedFrame = converterToFrame(opencvMat);
+                    recorder.record(processedFrame);
+//                    Imgcodecs.imwrite("F:\\JAVAAI\\model\\test3\\test"+a+".jpg", opencvMat);
+//                    saveVideo( opencvMat, frame, videoWriter,"F:\\JAVAAI\\model\\test3\\test1.mp4");
+
+                    // 将处理后的帧发送给所有连接的客户端
+          //          broadcastFrame(processedFrame);
+                }else {
+                    break;
+                }
+                a++;
+
+
+                // 显示帧（如果您想要显示视频）
+             //   canvasFrame.showImage(frame);
+
+                // 在这里可以对帧进行处理
+                // 例如：保存帧、分析帧内容等
+            }
+
+            grabber.stop();
+            grabber.release();
+
+            recorder.stop();
+            recorder.release();
+       //     canvasFrame.dispose();
+        } catch (Exception e) {
+            System.err.println("发生错误: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+
+
+    }
+
+    public static Frame converterToFrame(Mat mat) {
+        OpenCVFrameConverter.ToMat matConverter = new OpenCVFrameConverter.ToMat();
+        return matConverter.convert(mat);
+    }
+    public static void saveVideo(Mat mat, Frame frame, VideoWriter videoWriter, String outputVideoPath){
+        // 获取视频帧的宽度和高度
+        int frameWidth=frame.imageWidth;
+        int frameHeight=frame.imageHeight;
+        Size frameSize = new Size(frameWidth, frameHeight);
+
+
+        int fourcc = videoWriter.fourcc('M', 'J', 'P', 'G');
+        videoWriter.open(outputVideoPath, fourcc, 30, frameSize, true);
+        videoWriter.write(mat);
+    }
+
+    private static int max(float[] arr) {
+        int maxIdx = 0;
+        for (int i = 1; i < arr.length; i++) {
+            if (arr[i] > arr[maxIdx]) {
+                maxIdx = i;
+            }
+        }
+        return maxIdx;
+    }
+
+    /***
+     * AI模型嵌套模型
+     * 需要绝对路径
+     * 输入图片
+     */
+    public static String SendPicYoloV8(String weight,  String names, String picUrl, String saveName, String uploadpath) throws Exception {
+        log.info(uploadpath);
+        Long a=System.currentTimeMillis();
+        // 加载类别名称
+        List<String> classes = Files.readAllLines(Paths.get(uploadpath+ File.separator +names));
+        // 加载YOLOv8模型
+
+        log.info("weight地址{}",uploadpath+ File.separator +weight);
+        Net net = Dnn.readNetFromONNX(uploadpath+ File.separator +weight);
+        // 读取输入图像
+        log.info("图片地址{}",uploadpath+ File.separator +picUrl);
+        Mat image = Imgcodecs.imread(uploadpath+ File.separator +picUrl);
+        log.info("图片地址{}",image);
+
+        Mat blob = Dnn.blobFromImage(image, 1 / 255.0, new Size(640, 640), new Scalar(0), true, false);
+        net.setInput(blob);
+
+        List<Mat> result = new ArrayList<>();
+        List<String> outBlobNames = net.getUnconnectedOutLayersNames();
+        net.forward(result, outBlobNames);
+        System.out.println(Arrays.asList(outBlobNames));
+        if (result.isEmpty()) {
+            System.err.println("Failed to get output from the model.");
+            return "error";
+        }
+
+
+        float confThreshold = 0.3f;
+        float nmsThreshold = 0.4f;
+
+        List<Rect2d> boxes2d = new ArrayList<>();
+        List<Float> confidences = new ArrayList<>();
+        List<Integer> classIds = new ArrayList<>();
+
+        for (Mat output : result) {
+            int dims = output.dims();
+            int index = (int) output.size(0);
+            int rows = (int) output.size(1);
+            int cols = (int) output.size(2);
+            // Dims: 3, Rows: 25200, Cols: 8 row,Mat [ 1*25200*8*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x28dce2da990, dataAddr=0x28dd0ebc640 ]index:1
+            System.out.println("Dims: " + dims + ", Rows: " + rows + ", Cols: " + cols+" row,"+output.row(0)+"index:"+index);
+            Mat detectionMat = output.reshape(1, output.size(1));
+
+            for (int i = 0; i < detectionMat.rows(); i++) {
+                Mat detection = detectionMat.row(i);
+                Mat scores = detection.colRange(5, cols);
+                Core.MinMaxLocResult minMaxResult = Core.minMaxLoc(scores);
+                float confidence = (float)detection.get(0, 4)[0];
+                Point classIdPoint = minMaxResult.maxLoc;
+
+                if (confidence > confThreshold) {
+                    float centerX = (float)detection.get(0, 0)[0];
+                    float centerY = (float)detection.get(0, 1)[0];
+                    float width = (float)detection.get(0, 2)[0];
+                    float height = (float)detection.get(0, 3)[0];
+
+                    float left = centerX - width / 2;
+                    float top = centerY - height / 2;
+
+                    classIds.add((int)classIdPoint.x);
+                    confidences.add(confidence);
+                    boxes2d.add(new Rect2d(left, top, width, height));
+                    //  System.out.println("识别到了");
+                }
+            }
+        }
+
+// 应用非极大值抑制
+        MatOfRect2d boxes_mat = new MatOfRect2d();
+        boxes_mat.fromList(boxes2d);
+
+        MatOfFloat confidences_mat = new MatOfFloat(Converters.vector_float_to_Mat(confidences));
+        MatOfInt indices = new MatOfInt();
+        Dnn.NMSBoxes(boxes_mat, confidences_mat, confThreshold, nmsThreshold, indices);
+        if (!boxes_mat.empty() && !confidences_mat.empty()) {
+            System.out.println("不为空");
+            Dnn.NMSBoxes(boxes_mat, confidences_mat, confThreshold, nmsThreshold, indices);
+        }
+        int c=0;
+        int[] indices_arr = indices.toArray();
+        for (int idx : indices_arr) {
+            Rect2d box = boxes2d.get(idx);
+            int classId = classIds.get(idx);
+            float conf = confidences.get(idx);
+            double x=box.x;
+            double y=box.y;
+            double width=box.width*((double)image.cols()/640);
+            double height=box.height*((double)image.rows()/640);
+            double xzb=x*((double)image.cols()/640);
+            double yzb=y*((double)image.rows()/640);
+            System.out.println("绘制1"+"x:"+x+"y:"+ y+"");
+            System.out.println("绘制1"+"width:"+width+"height:"+ height+"");
+            System.out.println(" image.cols()"+ Double.valueOf((double)image.cols()/640));
+            System.out.println(" image.rows()"+Double.valueOf((double)image.rows()/640));
+
+            Imgproc.rectangle(image,
+                    new Point(xzb, yzb),
+                    new Point(xzb + width, yzb+ height),
+                    CommonColors(c), 2);
+            String label = classes.get(classId) + ": " + String.format("%.2f", conf);
+            Imgproc.putText(image, label, new Point(xzb, yzb - 10),
+                    Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, CommonColors(c), 2);
+            c++;
+        }
+        String savepath=uploadpath + File.separator + "temp" + File.separator;
+
+        if(StringUtils.isNotBlank(saveName)){
+            savepath+=saveName+".jpg";
+        }else{
+            saveName=System.currentTimeMillis()+"";
+            savepath+=saveName+".jpg";
+        }
+        log.info(savepath);
+        Imgcodecs.imwrite(savepath, image);
+        Long b=System.currentTimeMillis();
+        log.info("消耗时间："+(b-a));
+        return saveName+".jpg";
+    }
 
 
     /***
@@ -55,7 +387,374 @@ public class AIModelYolo3 {
      * 需要绝对路径
      * 输入图片
      */
-    public  String SendPicYoloV3(String weight,String cfg,String names,String picUrl,String saveName,String uploadpath) throws Exception {
+    public static String SendPicYoloV5(String weight,  String names, String picUrl, String saveName, String uploadpath) throws Exception {
+        log.info(uploadpath);
+        Long a=System.currentTimeMillis();
+        // 加载类别名称
+        List<String> classes = Files.readAllLines(Paths.get(uploadpath+ File.separator +names));
+        // 加载YOLOv5模型
+
+        log.info("weight地址{}",uploadpath+ File.separator +weight);
+        Net net = Dnn.readNetFromONNX(uploadpath+ File.separator +weight);
+        // 读取输入图像
+        log.info("图片地址{}",uploadpath+ File.separator +picUrl);
+        Mat image = Imgcodecs.imread(uploadpath+ File.separator +picUrl);
+        log.info("图片地址{}",image);
+
+        Mat blob = Dnn.blobFromImage(image, 1 / 255.0, new Size(640, 640), new Scalar(0), true, false);
+        net.setInput(blob);
+
+        List<Mat> result = new ArrayList<>();
+        List<String> outBlobNames = getOutputNames(net);
+        net.forward(result, outBlobNames);
+        System.out.println(Arrays.asList(outBlobNames));
+        if (result.isEmpty()) {
+            System.err.println("Failed to get output from the model.");
+            return "error";
+        }
+
+
+        float confThreshold = 0.3f;
+        float nmsThreshold = 0.4f;
+
+        List<Rect2d> boxes2d = new ArrayList<>();
+        List<Float> confidences = new ArrayList<>();
+        List<Integer> classIds = new ArrayList<>();
+
+        for (Mat output : result) {
+            int dims = output.dims();
+            int index = (int) output.size(0);
+            int rows = (int) output.size(1);
+            int cols = (int) output.size(2);
+            // Dims: 3, Rows: 25200, Cols: 8 row,Mat [ 1*25200*8*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x28dce2da990, dataAddr=0x28dd0ebc640 ]index:1
+            System.out.println("Dims: " + dims + ", Rows: " + rows + ", Cols: " + cols+" row,"+output.row(0)+"index:"+index);
+            Mat detectionMat = output.reshape(1, output.size(1));
+
+            for (int i = 0; i < detectionMat.rows(); i++) {
+                Mat detection = detectionMat.row(i);
+                Mat scores = detection.colRange(5, cols);
+                Core.MinMaxLocResult minMaxResult = Core.minMaxLoc(scores);
+                float confidence = (float)detection.get(0, 4)[0];
+                Point classIdPoint = minMaxResult.maxLoc;
+
+                if (confidence > confThreshold) {
+                    float centerX = (float)detection.get(0, 0)[0];
+                    float centerY = (float)detection.get(0, 1)[0];
+                    float width = (float)detection.get(0, 2)[0];
+                    float height = (float)detection.get(0, 3)[0];
+
+                    float left = centerX - width / 2;
+                    float top = centerY - height / 2;
+
+                    classIds.add((int)classIdPoint.x);
+                    confidences.add(confidence);
+                    boxes2d.add(new Rect2d(left, top, width, height));
+                    //  System.out.println("识别到了");
+                }
+            }
+        }
+
+// 应用非极大值抑制
+        MatOfRect2d boxes_mat = new MatOfRect2d();
+        boxes_mat.fromList(boxes2d);
+
+        MatOfFloat confidences_mat = new MatOfFloat(Converters.vector_float_to_Mat(confidences));
+        MatOfInt indices = new MatOfInt();
+        Dnn.NMSBoxes(boxes_mat, confidences_mat, confThreshold, nmsThreshold, indices);
+        if (!boxes_mat.empty() && !confidences_mat.empty()) {
+            System.out.println("不为空");
+            Dnn.NMSBoxes(boxes_mat, confidences_mat, confThreshold, nmsThreshold, indices);
+        }
+        //// 转换为 MatOfRect2d 和 MatOfFloat
+//        MatOfRect2d boxesNMS = new MatOfRect2d();
+//        boxesNMS.fromList(boxes);
+//
+//        MatOfFloat confidencesNMS = new MatOfFloat();
+//        confidencesNMS.fromList(confidences.stream().map(Float::valueOf).collect(Collectors.toList()));
+//
+//// 应用非最大抑制
+//        MatOfInt indicesNMS = new MatOfInt();
+//        Dnn.NMSBoxes(boxesNMS, confidencesNMS, CONFIDENCE_THRESHOLD, NMS_THRESHOLD, indicesNMS);
+// 绘制结果
+        //    List<String> classes = Arrays.asList("person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "couch", "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush");
+        int c=0;
+        int[] indices_arr = indices.toArray();
+        for (int idx : indices_arr) {
+            Rect2d box = boxes2d.get(idx);
+            int classId = classIds.get(idx);
+            float conf = confidences.get(idx);
+            double x=box.x;
+            double y=box.y;
+            double width=box.width*((double)image.cols()/640);
+            double height=box.height*((double)image.rows()/640);
+            double xzb=x*((double)image.cols()/640);
+            double yzb=y*((double)image.rows()/640);
+            System.out.println("绘制1"+"x:"+x+"y:"+ y+"");
+            System.out.println("绘制1"+"width:"+width+"height:"+ height+"");
+            System.out.println(image.cols()+" image.cols()"+ Double.valueOf((double)image.cols()/640));
+            System.out.println(image.rows()+" image.rows()"+Double.valueOf((double)image.rows()/640));
+
+            Imgproc.rectangle(image,
+                    new Point(xzb, yzb),
+                    new Point(xzb + width, yzb+ height),
+                    CommonColors(c), 2);
+            String label = classes.get(classId) + ": " + String.format("%.2f", conf);
+            Imgproc.putText(image, label, new Point(xzb, yzb - 10),
+                    Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, CommonColors(c), 2);
+            c++;
+        }
+        String savepath=uploadpath + File.separator + "temp" + File.separator;
+
+        if(StringUtils.isNotBlank(saveName)){
+            savepath+=saveName+".jpg";
+        }else{
+            saveName=System.currentTimeMillis()+"";
+            savepath+=saveName+".jpg";
+        }
+        log.info(savepath);
+        Imgcodecs.imwrite(savepath, image);
+        Long b=System.currentTimeMillis();
+        log.info("消耗时间："+(b-a));
+        return saveName+".jpg";
+    }
+
+    /***
+     * AI模型嵌套模型
+     * 需要绝对路径
+     * 输入图片
+     */
+    public static String SendPicYoloV5Car(String weight,  String names, String picUrl, String saveName, String uploadpath) throws Exception {
+        log.info(uploadpath);
+        Long a=System.currentTimeMillis();
+        // 加载类别名称
+        List<String> classes = Files.readAllLines(Paths.get(uploadpath+ File.separator +names));
+        // 加载YOLOv5模型
+
+        log.info("weight地址{}",uploadpath+ File.separator +weight);
+        Net net = Dnn.readNetFromONNX(uploadpath+ File.separator +weight);
+        // 读取输入图像
+        log.info("图片地址{}",uploadpath+ File.separator +picUrl);
+        Mat image = Imgcodecs.imread(uploadpath+ File.separator +picUrl);
+        log.info("图片地址{}",image);
+
+        Mat blob = Dnn.blobFromImage(image, 1 / 255.0, new Size(640, 640), new Scalar(0), true, false);
+        net.setInput(blob);
+
+        List<Mat> result = new ArrayList<>();
+        List<String> outBlobNames = getOutputNames(net);
+        net.forward(result, outBlobNames);
+        System.out.println(Arrays.asList(outBlobNames));
+        if (result.isEmpty()) {
+            System.err.println("Failed to get output from the model.");
+            return "error";
+        }
+
+
+        float confThreshold = 0.3f;
+        float nmsThreshold = 0.4f;
+
+        List<Rect2d> boxes2d = new ArrayList<>();
+        List<Float> confidences = new ArrayList<>();
+        List<Integer> classIds = new ArrayList<>();
+
+        for (Mat output : result) {
+            int dims = output.dims();
+            int index = (int) output.size(0);
+            int rows = (int) output.size(1);
+            int cols = (int) output.size(2);
+            // Dims: 3, Rows: 25200, Cols: 8 row,Mat [ 1*25200*8*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x28dce2da990, dataAddr=0x28dd0ebc640 ]index:1
+            System.out.println("Dims: " + dims + ", Rows: " + rows + ", Cols: " + cols+" row,"+output.row(0)+"index:"+index);
+            Mat detectionMat = output.reshape(1, output.size(1));
+
+            for (int i = 0; i < detectionMat.rows(); i++) {
+                Mat detection = detectionMat.row(i);
+                Mat scores = detection.colRange(5, cols);
+                Core.MinMaxLocResult minMaxResult = Core.minMaxLoc(scores);
+                float confidence = (float)detection.get(0, 4)[0];
+                Point classIdPoint = minMaxResult.maxLoc;
+
+                if (confidence > confThreshold) {
+                    float centerX = (float)detection.get(0, 0)[0];
+                    float centerY = (float)detection.get(0, 1)[0];
+                    float width = (float)detection.get(0, 2)[0];
+                    float height = (float)detection.get(0, 3)[0];
+
+                    float left = centerX - width / 2;
+                    float top = centerY - height / 2;
+
+                    classIds.add((int)classIdPoint.x);
+                    confidences.add(confidence);
+                    boxes2d.add(new Rect2d(left, top, width, height));
+                    //  System.out.println("识别到了");
+                }
+            }
+        }
+
+// 应用非极大值抑制
+        MatOfRect2d boxes_mat = new MatOfRect2d();
+        boxes_mat.fromList(boxes2d);
+
+        MatOfFloat confidences_mat = new MatOfFloat(Converters.vector_float_to_Mat(confidences));
+        MatOfInt indices = new MatOfInt();
+        Dnn.NMSBoxes(boxes_mat, confidences_mat, confThreshold, nmsThreshold, indices);
+        if (!boxes_mat.empty() && !confidences_mat.empty()) {
+            System.out.println("不为空");
+            Dnn.NMSBoxes(boxes_mat, confidences_mat, confThreshold, nmsThreshold, indices);
+        }
+        int c=0;
+        int[] indices_arr = indices.toArray();
+        for (int idx : indices_arr) {
+            Rect2d box = boxes2d.get(idx);
+
+            int classId = classIds.get(idx);
+            float conf = confidences.get(idx);
+            double x=box.x;
+            double y=box.y;
+            double width=box.width*((double)image.cols()/640);
+            double height=box.height*((double)image.rows()/640);
+            double xzb=x*((double)image.cols()/640);
+            double yzb=y*((double)image.rows()/640);
+            System.out.println("绘制1"+"x:"+x+"y:"+ y+"");
+            System.out.println("绘制1"+"width:"+width+"height:"+ height+"");
+            System.out.println(" image.cols()"+ Double.valueOf((double)image.cols()/640));
+            System.out.println(" image.rows()"+Double.valueOf((double)image.rows()/640));
+
+            Rect rect=new Rect((int)Math.round(xzb), (int)Math.round(yzb), (int) Math.round(width), (int)Math.round(height));
+            Mat plaateimage = Imgcodecs.imread(uploadpath+ File.separator +picUrl);
+            Mat plateMat = new Mat(plaateimage, rect);
+
+
+            String plateNumber = extractPlateNumber(plateMat);
+            String plateColor = recognizePlateColor(plateMat);
+
+            System.out.println("车牌号码: " + plateNumber);
+            System.out.println("车牌颜色: " + plateColor);
+
+            // 在原图上绘制检测结果
+            Imgproc.rectangle(image, rect, new Scalar(0, 255, 0), 2);
+            Imgproc.putText(image, plateNumber, new Point(rect.x, rect.y - 10),
+                    Imgproc.FONT_HERSHEY_SIMPLEX, 0.9, new Scalar(0, 255, 0), 2);
+
+
+
+            c++;
+        }
+        String savepath=uploadpath + File.separator + "temp" + File.separator;
+
+        if(StringUtils.isNotBlank(saveName)){
+            savepath+=saveName+".jpg";
+        }else{
+            saveName=System.currentTimeMillis()+"";
+            savepath+=saveName+".jpg";
+        }
+        log.info(savepath);
+        Imgcodecs.imwrite(savepath, image);
+        Long b=System.currentTimeMillis();
+        log.info("消耗时间："+(b-a));
+        return saveName+".jpg";
+    }
+    private static String recognizePlateColor(Mat plateMat) {
+        Mat hsvMat = new Mat();
+        Imgproc.cvtColor(plateMat, hsvMat, Imgproc.COLOR_BGR2HSV);
+
+        Scalar blueMin = new Scalar(100, 100, 100);
+        Scalar blueMax = new Scalar(140, 255, 255);
+        Scalar yellowMin = new Scalar(20, 100, 100);
+        Scalar yellowMax = new Scalar(30, 255, 255);
+        Scalar greenMin = new Scalar(40, 100, 100);
+        Scalar greenMax = new Scalar(80, 255, 255);
+        Scalar whiteMin = new Scalar(0, 0, 200);
+        Scalar whiteMax = new Scalar(180, 30, 255);
+
+        Mat blueMask = new Mat();
+        Mat yellowMask = new Mat();
+        Mat greenMask = new Mat();
+        Mat whiteMask = new Mat();
+
+        Core.inRange(hsvMat, blueMin, blueMax, blueMask);
+        Core.inRange(hsvMat, yellowMin, yellowMax, yellowMask);
+        Core.inRange(hsvMat, greenMin, greenMax, greenMask);
+        Core.inRange(hsvMat, whiteMin, whiteMax, whiteMask);
+
+        int bluePixels = Core.countNonZero(blueMask);
+        int yellowPixels = Core.countNonZero(yellowMask);
+        int greenPixels = Core.countNonZero(greenMask);
+        int whitePixels = Core.countNonZero(whiteMask);
+
+        int maxPixels = Math.max(Math.max(bluePixels, yellowPixels), Math.max(greenPixels, whitePixels));
+
+        if (maxPixels == bluePixels) return "蓝色";
+        if (maxPixels == yellowPixels) return "黄色";
+        if (maxPixels == greenPixels) return "绿色";
+        if (maxPixels == whitePixels) return "白色";
+        return "未知";
+    }
+    //读取文字
+    private static String extractPlateNumber(Mat plateMat) {
+        // 预处理
+        Mat gray = new Mat();
+        Mat binary = new Mat();
+        Imgproc.cvtColor(plateMat, gray, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.threshold(gray, binary, 0, 255, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
+
+        // 查找轮廓
+        List<MatOfPoint> contours = new ArrayList<>();
+        Mat hierarchy = new Mat();
+        Imgproc.findContours(binary, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        // 筛选可能的字符轮廓
+        List<Rect> charBounds = new ArrayList<>();
+        for (MatOfPoint contour : contours) {
+            Rect rect = Imgproc.boundingRect(contour);
+            if (isValidCharSize(rect, binary.size())) {
+                charBounds.add(rect);
+            }
+        }
+
+        // 按x坐标排序
+        charBounds.sort(Comparator.comparingInt(r -> r.x));
+        CharRecognizer recognizer = new CharRecognizer();
+        // 识别每个字符
+        StringBuilder plateNumber = new StringBuilder();
+        int a=0;
+        for (Rect charRect : charBounds) {
+            Mat charMat = new Mat(binary, charRect);
+            char recognizedChar;
+            if(a==0){
+                recognizedChar = recognizer.recognizeChineseChar(charMat);
+            }else{
+                recognizedChar = recognizer.recognizeChar(charMat);
+            }
+            a++;
+
+            plateNumber.append(recognizedChar);
+        }
+
+        return plateNumber.toString();
+    }
+
+
+    private static boolean isValidCharSize(Rect rect, Size plateSize) {
+        double charAspectRatio = (double) rect.height / rect.width;
+        double charHeightRatio = (double) rect.height / plateSize.height;
+        return charAspectRatio > 1.0 && charAspectRatio < 4.0 &&
+                charHeightRatio > 0.4 && charHeightRatio < 0.9;
+    }
+
+    private static List<String> getOutputNames(Net net) {
+        List<String> names = new ArrayList<>();
+        List<Integer> outLayers = net.getUnconnectedOutLayers().toList();
+        List<String> layersNames = net.getLayerNames();
+        outLayers.forEach(i -> names.add(layersNames.get(i - 1)));
+        return names;
+    }
+
+    /***
+     * AI模型嵌套模型
+     * 需要绝对路径
+     * 输入图片
+     */
+    public static String SendPicYoloV3(String weight, String cfg, String names, String picUrl, String saveName, String uploadpath) throws Exception {
         log.info(uploadpath);
         Long a=System.currentTimeMillis();
         // 加载类别名称
@@ -123,13 +822,16 @@ public class AIModelYolo3 {
         int c=0;
         for (int idx : indicesArray) {
             Rect2d box = boundingBoxes.get(idx);
+
+            System.out.println("绘制111111"+"x:"+box.x+"y:"+ box.y+"");
+            System.out.println("绘制11111111"+"width:"+box.width+"y:"+ box.height+"");
             Imgproc.rectangle(image, new Point(box.x, box.y), new Point(box.x + box.width, box.y + box.height),CommonColors(c), 2);
             // 添加类别标签
             log.info("当前有多少"+confidences.get(idx));
             Integer ab=classIds.get(idx);
             log.info("类别下标"+ab);
             //  AIModelYolo3.addChineseText(image, caption,new Point(box.x, box.y - 5));
-            Imgproc.putText(image, classNames.get(ab), new Point(box.x, box.y - 5), Core.FONT_HERSHEY_SIMPLEX, 0.5, CommonColors(c), 1);
+            Imgproc.putText(image, classNames.get(ab), new Point(box.x, box.y - 5), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, CommonColors(c), 1);
             c++;
         }
         String savepath=uploadpath + File.separator + "temp" + File.separator;
@@ -182,7 +884,7 @@ public class AIModelYolo3 {
         // 设置输出视频文件参数
         int frameWidth = (int) videoCapture.get(Videoio.CAP_PROP_FRAME_WIDTH);
         int frameHeight = (int) videoCapture.get(Videoio.CAP_PROP_FRAME_HEIGHT);
-     //   VideoWriter videoWriter = new VideoWriter("F:\\JAVAAI\\output.mp4", VideoCodec.MPEG4, 30, new Size(frameWidth, frameHeight), true);
+        //   VideoWriter videoWriter = new VideoWriter("F:\\JAVAAI\\output.mp4", VideoCodec.MPEG4, 30, new Size(frameWidth, frameHeight), true);
         VideoWriter videoWriter = new VideoWriter("F:\\JAVAAI\\output.mp4", VideoWriter.fourcc('X', '2', '6', '4'), 30, new Size(frameWidth, frameHeight), true);
 
         Mat  frame =new Mat();
@@ -251,7 +953,7 @@ public class AIModelYolo3 {
                 Integer ab=classIds.get(idx);
                 log.info("类别下标"+ab);
                 //  AIModelYolo3.addChineseText(image, caption,new Point(box.x, box.y - 5));
-                Imgproc.putText(frame, classNames.get(ab), new Point(box.x, box.y - 5), Core.FONT_HERSHEY_SIMPLEX, 0.5, CommonColors(c), 1);
+                Imgproc.putText(frame, classNames.get(ab), new Point(box.x, box.y - 5), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, CommonColors(c), 1);
                 c++;
                 videoWriter.write(frame);
             }
@@ -263,10 +965,10 @@ public class AIModelYolo3 {
                 saveName=savepath+System.currentTimeMillis()+".jpg";
             }
 
-           // Imgcodecs.imwrite(saveName, frame);
+            // Imgcodecs.imwrite(saveName, frame);
 
 
-     //       imshow("YOLOv3 Detection", frame);
+            //       imshow("YOLOv3 Detection", frame);
             long d=(b-a)/1000;
             if(d>60){
                 break;
@@ -427,14 +1129,14 @@ public class AIModelYolo3 {
             List<JSONObject>  jsonlist=new ArrayList<>();
             for (int idx : indicesArray) {
                 Rect2d box = boundingBoxes.get(idx);
-            //    Imgproc.rectangle(frame, new Point(box.x, box.y), new Point(box.x + box.width, box.y + box.height),CommonColors(c), 2);
+                //    Imgproc.rectangle(frame, new Point(box.x, box.y), new Point(box.x + box.width, box.y + box.height),CommonColors(c), 2);
                 // 添加类别标签
                 log.info("当前有多少"+confidences.get(idx));
                 Integer ab=classIds.get(idx);
                 log.info("类别下标"+ab);
                 //  AIModelYolo3.addChineseText(image, caption,new Point(box.x, box.y - 5))
                 log.info("Detected object at: (" + box.x + ", " + box.y + "),width: (" + box.width + ", " + box.height + ")");
-             //   Imgproc.putText(frame, classNames.get(ab), new Point(box.x, box.y - 5), Core.FONT_HERSHEY_SIMPLEX, 0.5, CommonColors(c), 1);
+                //   Imgproc.putText(frame, classNames.get(ab), new Point(box.x, box.y - 5), Core.FONT_HERSHEY_SIMPLEX, 0.5, CommonColors(c), 1);
 
                 bja.put("cmd", "video");
                 JSONObject bj=new JSONObject();
@@ -512,7 +1214,7 @@ public class AIModelYolo3 {
         // 提交多个任务到线程池
         for (int i = 0; i < 3; i++) {
             //效果延迟了三秒
-       //     executor.submit(new VideoFrameReader(videoUrl,uploadpath+ File.separator +weight,uploadpath+ File.separator +cfg,uploadpath+ File.separator +names,redisUtil,webSocket,userId,i,redisTemplate));
+            //     executor.submit(new VideoFrameReader(videoUrl,uploadpath+ File.separator +weight,uploadpath+ File.separator +cfg,uploadpath+ File.separator +names,redisUtil,webSocket,userId,i,redisTemplate));
             if(i==0){
                 executor.submit(new VideoRead(videoUrl,redisTemplate,userId));
             }else if(i==1){
@@ -531,6 +1233,48 @@ public class AIModelYolo3 {
 
     }
 
+
+    /**
+     * 多线程处理视频帧
+     * @param
+     * @return
+     */
+    public  String SendVideoLocalhostYoloV5Thread(String userId, String weight, String cfg, String names, String videoUrl, String uploadpath, WebSocket webSocket, RedisUtil redisUtil, RedisTemplate redisTemplate) throws Exception {
+        Long a=System.currentTimeMillis();
+
+
+        // 加载v5/v8模型
+        log.info("cfg地址{}",uploadpath+ File.separator +cfg);
+        log.info("weight地址{}",uploadpath+ File.separator +weight);
+        log.info("names{}",uploadpath+ File.separator +names);
+        // 计算每帧的时间消耗（单位：毫秒）
+        int maxIdleThreads = Runtime.getRuntime().availableProcessors();
+        log.info("当前主机最大空闲线程数：" + maxIdleThreads);
+        // 创建线程池
+        ExecutorService executor = Executors.newCachedThreadPool();
+        VideoSendReadCfg.StartTime=0;
+        log.info("videoUrl：" + videoUrl);
+        // 提交多个任务到线程池
+        for (int i = 0; i < 3; i++) {
+            //效果延迟了三秒
+            //     executor.submit(new VideoFrameReader(videoUrl,uploadpath+ File.separator +weight,uploadpath+ File.separator +cfg,uploadpath+ File.separator +names,redisUtil,webSocket,userId,i,redisTemplate));
+            if(i==0){
+                executor.submit(new VideoReadV5(videoUrl,redisTemplate,userId));
+            }else if(i==1){
+                executor.submit(new VideoReadInfoV5(videoUrl,redisTemplate,userId,uploadpath+ File.separator +names,uploadpath+ File.separator +cfg,uploadpath+ File.separator +weight,webSocket));
+            }else{
+                executor.submit(new VideoReadtestV5(videoUrl,redisTemplate,userId));
+            }
+            Thread.sleep(3000);
+        }
+        // 关闭线程池
+       // executor.shutdown();
+
+
+
+        return "";
+
+    }
     /***
      * 带线程推送
      *
@@ -583,7 +1327,7 @@ public class AIModelYolo3 {
     }
 
 
-    public static Mat image=new Mat();
+
     public static Mat addChineseText(Mat images, String text, Point position,Scalar scalar) {
         BufferedImage bufferedImage = matToBufferedImage(images);
         Graphics graphics = bufferedImage.getGraphics();

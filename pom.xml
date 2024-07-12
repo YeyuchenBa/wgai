@@ -98,6 +98,13 @@
 	</repositories>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>net.sourceforge.tess4j</groupId>
+			<artifactId>tess4j</artifactId>
+			<version>4.5.5</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -129,6 +136,8 @@
 
 	<dependencyManagement>
 		<dependencies>
+
+
 			<!-- spring-cloud-->
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
@@ -405,7 +414,7 @@
             </activation>
             <properties>
                 <!--当前环境-->
-                <profile.name>test</profile.name>
+                <profile.name>dev</profile.name>
 				<!--Nacos服务地址-->
                 <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
             </properties>

@@ -1,5 +1,6 @@
 package org.jeecg.modules.message.websocket;
 
+import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Resource;
@@ -11,6 +12,13 @@ import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.WebsocketConst;
 import org.jeecg.common.modules.redis.client.JeecgRedisClient;
+import org.jeecg.common.util.SpringContextUtils;
+import org.jeecg.modules.demo.tab.service.ITabAiHistoryService;
+import org.jeecg.modules.demo.tab.service.impl.TabAiHistoryServiceImpl;
+import org.jeecg.modules.system.mapper.SysCategoryMapper;
+import org.jeecg.modules.system.service.ISysDepartService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,11 +43,21 @@ public class WebSocket {
     private JeecgRedisClient jeecgRedisClient;
 
 
+
+
     //==========【websocket接受、推送消息等方法 —— 具体服务节点推送ws消息】========================================================================================
     @OnOpen
     public void onOpen(Session session, @PathParam(value = "userId") String userId) {
         try {
             sessionPool.put(userId, session);
+            log.info("连接人：{}",userId);
+            if(userId.indexOf("rtsp")>-1){
+                System.out.println("连接开始了");
+
+                ITabAiHistoryService baseMapper = (ITabAiHistoryService) SpringContextUtils.getBean("tabAiHistoryServiceImpl");
+                baseMapper.sendUrlFLV();//sendUrl();
+            }
+
             log.info("【系统 WebSocket】有新的连接，总数为:" + sessionPool.size());
         } catch (Exception e) {
         }
@@ -101,12 +119,51 @@ public class WebSocket {
         }
     }
 
+    /**
+     * ws遍历群发消息
+     */
+    public void pushMessageByte( byte[] encodedData) {
+        try {
+            for (Map.Entry<String, Session> item : sessionPool.entrySet()) {
+                Session session = item.getValue();
+                try {
+                    synchronized(session){
+                        session.getBasicRemote().sendBinary(ByteBuffer.wrap(encodedData));
+                    }
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+            log.info("【系统 WebSocket】群发消息:" + encodedData);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
 
+    public void broadcastFrame( ByteBuffer buffer) {
+        try {
+            for (Map.Entry<String, Session> item : sessionPool.entrySet()) {
+                Session session = item.getValue();
+                try {
+                    synchronized(session){
+                        session.getBasicRemote().sendBinary(buffer);
+                    }
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+            log.info("【系统 WebSocket】群发消息:" + buffer);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
     /**
      * ws接受客户端消息
      */
     @OnMessage
     public void onMessage(String message, @PathParam(value = "userId") String userId) {
+        log.info("1【系统 WebSocket】收到客户端消息:" + message);
+
         if(!"ping".equals(message) && !WebsocketConst.CMD_CHECK.equals(message)){
             log.info("【系统 WebSocket】收到客户端消息:" + message);
         }else{
@@ -132,7 +189,7 @@ public class WebSocket {
     @OnError
     public void onError(Session session, Throwable t) {
         log.warn("【系统 WebSocket】消息出现错误");
-        //t.printStackTrace();
+        t.printStackTrace();
     }
     //==========【系统 WebSocket接受、推送消息等方法 —— 具体服务节点推送ws消息】========================================================================================
     

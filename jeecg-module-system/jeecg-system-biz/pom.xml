@@ -47,14 +47,24 @@
 		<dependency>
 			<groupId>org.openpnp</groupId>
 			<artifactId>opencv</artifactId>
-			<version>3.4.16</version>
-			<scope>compile</scope>
-		</dependency>
+			<version>4.8.1-0</version>
+			<!--			<version>3.4.16</version>-->
 
+		</dependency>
+		<dependency>
+			<groupId>com.microsoft.onnxruntime</groupId>
+			<artifactId>onnxruntime</artifactId>
+			<version>1.17.0</version>
+		</dependency>
 		<dependency>
 			<groupId>com.github.xingshuangs</groupId>
 			<artifactId>iot-communication</artifactId>
 			<version>1.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bytedeco</groupId>
+			<artifactId>javacv-platform</artifactId>
+			<version>1.5.10</version>
 		</dependency>
 		<!-- 积木报表 mongo redis 支持包
         <dependency>

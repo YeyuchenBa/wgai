@@ -127,6 +127,7 @@ public class ShiroConfig {
 
         filterChainDefinitionMap.put("/sys/annountCement/show/**", "anon");
         filterChainDefinitionMap.put("/tab/tabAiSubscription/**", "anon");
+        filterChainDefinitionMap.put("/tab/tabAiBase/**", "anon");
         //积木报表排除
         filterChainDefinitionMap.put("/jmreport/**", "anon");
         filterChainDefinitionMap.put("/**/*.js.map", "anon");
