@@ -74,6 +74,7 @@ public class TabAiModel implements Serializable {
 	/**备用*/
 	@Excel(name = "备用", width = 15)
     @ApiModelProperty(value = "备用")
+    @Dict(dicCode = "model_type")
     private String spareOne;
 	/**备用*/
 	@Excel(name = "备用", width = 15)

@@ -47,8 +47,9 @@
 		<dependency>
 			<groupId>org.openpnp</groupId>
 			<artifactId>opencv</artifactId>
-			<version>3.4.16</version>
-			<scope>compile</scope>
+			<version>4.8.1-0</version>
+			<!--			<version>3.4.16</version>-->
+
 		</dependency>
 
 		<dependency>

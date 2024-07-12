@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.modules.tab.AIModel.AIModelYolo3;
 import org.jeecg.modules.tab.entity.TabAiModel;
+import org.jeecg.modules.tab.service.ITabAiModelService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -56,7 +57,8 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class TabAiHistoryController extends JeecgController<TabAiHistory, ITabAiHistoryService> {
 	@Autowired
 	private ITabAiHistoryService tabAiHistoryService;
-	
+	 @Autowired
+	 private ITabAiModelService iTabAiModelService;
 	/**
 	 * 分页列表查询
 	 *
@@ -108,22 +110,7 @@ public class TabAiHistoryController extends JeecgController<TabAiHistory, ITabAi
 	 @PostMapping(value = "/addIdentify")
 	 public Result<String> addIdentify(@RequestBody TabAiModelBund tabAiModelBund) {
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		if(tabAiModelBund.getSpaceOne().equals("0")){ //当前为图片
-			int a=tabAiHistoryService.saveIdentify(tabAiModelBund,uploadpath);
-			if(a==0){
-				return Result.OK("识别图片成功！");
-			}
-		}else{
-			// 输出视频
-			// tabAiHistoryService.saveIdentifyVideo(tabAiModelBund,uploadpath);
-			// 输出坐标 延迟3-5s
-			//tabAiHistoryService.saveIdentifyLocalVideo(tabAiModelBund,uploadpath,sysUser.getId());
-			//多线程输出坐标
-			tabAiHistoryService.saveIdentifyLocalVideoThread(tabAiModelBund,uploadpath,sysUser.getId());
-			return Result.OK("视频识别开始");
-		}
-
-		 return Result.error("识别失败！未识别到内容");
+		 return tabAiHistoryService.startAi(tabAiModelBund,uploadpath,sysUser.getId());
 	 }
 
 	 /**

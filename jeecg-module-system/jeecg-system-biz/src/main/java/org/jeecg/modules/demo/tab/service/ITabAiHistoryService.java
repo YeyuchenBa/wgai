@@ -1,5 +1,6 @@
 package org.jeecg.modules.demo.tab.service;
 
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.demo.tab.entity.TabAiHistory;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -15,12 +16,33 @@ import org.jeecg.modules.tab.entity.TabAiModel;
 public interface ITabAiHistoryService extends IService<TabAiHistory> {
 
 
+
+    /**
+     * 添加车牌识别
+     * @param
+     */
+    public int saveCarIdentify(TabAiModelBund tabAiModelBund,String path);
     /**
      * 添加自动识别历史记录
      * @param
      */
     public int saveIdentify(TabAiModelBund tabAiModelBund,String path);
 
+    /***
+     * v5识别内容
+     * @param tabAiModelBund
+     * @param path
+     * @return
+     */
+    public int saveIdentifyYolov5(TabAiModelBund tabAiModelBund,String path);
+
+    /***
+     * v8识别内容
+     * @param tabAiModelBund
+     * @param path
+     * @return
+     */
+    public int saveIdentifyYolov8(TabAiModelBund tabAiModelBund,String path);
     /**
      * 关闭自动识别历史记录
      * @param
@@ -51,5 +73,8 @@ public interface ITabAiHistoryService extends IService<TabAiHistory> {
      * @return
      */
     public int saveIdentifyLocalVideoThread(TabAiModelBund tabAiModelBund,String path,String userId);
+
+
+    Result<String> startAi(TabAiModelBund tabAiModelBund, String path, String userId);
 
 }

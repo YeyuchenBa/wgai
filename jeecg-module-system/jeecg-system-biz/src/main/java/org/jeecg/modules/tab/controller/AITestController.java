@@ -146,7 +146,7 @@ public class AITestController {
             Integer ab=classIds.get(idx);
             System.out.println("类别下标"+ab);
             //  AIModelYolo3.addChineseText(image, caption,new Point(box.x, box.y - 5));
-            Imgproc.putText(image, classNames.get(ab), new Point(box.x, box.y - 5), Core.FONT_HERSHEY_SIMPLEX, 0.5, CommonColors(c), 1);
+            Imgproc.putText(image, classNames.get(ab), new Point(box.x, box.y - 5), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, CommonColors(c), 1);
             c++;
         }
 
@@ -245,7 +245,7 @@ public class AITestController {
 
             String caption ="滚轴";
           //  AIModelYolo3.addChineseText(image, caption,new Point(box.x, box.y - 5));
-          Imgproc.putText(image, caption, new Point(box.x, box.y - 5), Core.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 0), 1);
+          Imgproc.putText(image, caption, new Point(box.x, box.y - 5), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 0), 1);
         }
 
 

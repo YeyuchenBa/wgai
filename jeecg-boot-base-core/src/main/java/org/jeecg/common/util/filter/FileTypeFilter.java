@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 public class FileTypeFilter {
 
     /**文件后缀*/
-    private static String[] forbidType = {"jsp","php"};
+    private static String[] forbidType = {"jsp"};
 
     /**初始化文件头类型，不够的自行补充*/
     final static HashMap<String, String> FILE_TYPE_MAP = new HashMap<>();
