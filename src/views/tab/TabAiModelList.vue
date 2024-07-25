@@ -127,6 +127,11 @@
             dataIndex: 'aiName'
           },
           {
+            title:'AI模型类型',
+            align:"center",
+            dataIndex: 'spareOne_dictText'
+          },
+          {
             title:'AI权重文件',
             align:"center",
             dataIndex: 'aiWeights',

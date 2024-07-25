@@ -23,6 +23,12 @@
               <j-upload v-model="model.aiNameName"   ></j-upload>
             </a-form-model-item>
           </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="模型类型" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="spareOne">
+             <j-dict-select-tag  v-model="model.spareOne" placeholder="请选择模型类型"
+                               dictCode="model_type"/>
+            </a-form-model-item>
+          </a-col>
         </a-row>
       </a-form-model>
     </j-form-container>
