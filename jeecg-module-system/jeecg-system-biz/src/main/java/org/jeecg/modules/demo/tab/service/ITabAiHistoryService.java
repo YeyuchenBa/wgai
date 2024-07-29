@@ -18,12 +18,23 @@ import org.jeecg.modules.tab.entity.TabAiModel;
 public interface ITabAiHistoryService extends IService<TabAiHistory> {
 
 
-
+    /**
+     * 识别内容文字
+     * @param tabAiModelBund
+     * @return
+     */
+    public int saveStr(TabAiModelBund tabAiModelBund,String path);
     /**
      * 添加车牌识别
      * @param
      */
     public int saveCarIdentify(TabAiModelBund tabAiModelBund,String path);
+
+    /**
+     * 添加车牌识别
+     * @param
+     */
+    public int saveCarIdentifyV5(TabAiModelBund tabAiModelBund,String path);
     /**
      * 添加自动识别历史记录
      * @param

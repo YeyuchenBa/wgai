@@ -20,8 +20,14 @@
 
 >[<span style="color: red;">@github仓库地址</span>](https://github.com/YeyuchenBa/wgai)
 
-# 功能截图和功能介绍配置
+# 新功能截图和功能介绍配置
+## 目前支持 蓝牌、绿牌、黄牌、白牌、车辆车牌识别
+![chepaishibie](wg/chepaishibie.gif)
 
+## 目前支持 OCR 95%高精度文字提取识别
+![OCR](wg/OCR.gif)
+
+# 目前已经支持功能截图和功能介绍配置
 ## - 自主图片视频识别
 
 ###  首页       

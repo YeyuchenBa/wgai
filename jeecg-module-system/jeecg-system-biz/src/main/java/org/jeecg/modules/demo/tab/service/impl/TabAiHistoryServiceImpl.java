@@ -35,6 +35,7 @@ import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.jeecg.modules.tab.AIModel.AIModelYolo3.bufferedImageToMat;
@@ -66,6 +67,33 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
     RedisTemplate redisTemplate;
 
     @Override
+    public int saveStr(TabAiModelBund tabAiModelBund,String path) {
+        Long a=System.currentTimeMillis();
+        LambdaQueryWrapper< TabAiModel> query = new LambdaQueryWrapper<>();
+        TabAiModel tabAiModel1=modelMapper.selectById(tabAiModelBund.getModelName());
+        AIModelYolo3  modelYolo3=new AIModelYolo3();
+        try {
+            String savePath=modelYolo3.imageStr(tabAiModelBund.getSaveUrl(),path);
+            log.info("识别文字内容{}",savePath);
+            Long b=System.currentTimeMillis();
+            TabAiHistory tabAiHistory=new TabAiHistory();
+            tabAiHistory.setBundName(tabAiModel1.getAiName());
+            tabAiHistory.setModelName(tabAiModel1.getAiName());
+            tabAiHistory.setModelId(tabAiModelBund.getModelName());
+            tabAiHistory.setSendUrl(tabAiModelBund.getSaveUrl());
+            tabAiHistory.setSendTime(b-a+"");
+            tabAiHistory.setSendMsg(savePath);
+            tabAiHistoryMapper.insert(tabAiHistory);
+            return 0;
+        }catch (Exception ex){
+            log.warn("出错{}",ex);
+            ex.printStackTrace();
+            return 1;
+        }
+
+    }
+
+    @Override
     public int saveCarIdentify(TabAiModelBund tabAiModelBund, String path) {
         Long a=System.currentTimeMillis();
         LambdaQueryWrapper< TabAiModel> query = new LambdaQueryWrapper<>();
@@ -92,6 +120,39 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
             return 1;
         }
 
+    }
+
+    @Override
+    public int saveCarIdentifyV5(TabAiModelBund tabAiModelBund, String path) {
+        Long a=System.currentTimeMillis();
+        LambdaQueryWrapper< TabAiModel> query = new LambdaQueryWrapper<>();
+        TabAiModel tabAiModel1=modelMapper.selectById(tabAiModelBund.getModelName());
+        AIModelYolo3  modelYolo3=new AIModelYolo3();
+        try {
+            Map<String,Object> savePath=modelYolo3.SendPicOpencvCarV5(tabAiModel1.getAiWeights(),tabAiModelBund.getSaveUrl(),null,path);
+            log.info("savePath.get(\"isOk\"){}",savePath.get("isOk"));
+            if((boolean)savePath.get("isOk")==false){
+                return 1;
+            }
+            log.info("识别存储文件地址{}",savePath);
+            log.info("识别存储文件color{}",savePath);
+            log.info("识别存储文件plate{}",savePath);
+            Long b=System.currentTimeMillis();
+            TabAiHistory tabAiHistory=new TabAiHistory();
+            tabAiHistory.setBundName(tabAiModel1.getAiName());
+            tabAiHistory.setModelName(tabAiModel1.getAiName());
+            tabAiHistory.setModelId(tabAiModelBund.getModelName());
+            tabAiHistory.setSendUrl("temp/"+savePath.get("url"));
+            tabAiHistory.setSendTime(b-a+"");
+            tabAiHistory.setRemake(savePath.get("color")+"");
+            tabAiHistory.setSendMsg(savePath.get("plate")+"");
+            tabAiHistoryMapper.insert(tabAiHistory);
+            return 0;
+        }catch (Exception ex){
+            log.warn("出错{}",ex);
+            ex.printStackTrace();
+            return 1;
+        }
     }
 
     @Override
@@ -364,15 +425,25 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
                         this.saveIdentifyLocalVideoThread(tabAiModelBund,path,userId);
                         return Result.OK("视频识别开始");
                     }
+                    break;
                 }
                 case "2":
                 {
                     log.info("【进入V5开始识别内容】{}",tabAiModelBund.getSpaceTwo());
                     if(tabAiModelBund.getSpaceOne().equals("0")){ //当前为图片
-                        int a=this.saveIdentifyYolov5(tabAiModelBund,path);
-                        if(a==0){
-                            return Result.OK("识别图片成功！");
+                        if(tabAiModelBund.getSpaceTwo().indexOf("车牌")>-1){
+                            log.info("【进入车牌识别内容】{}",tabAiModelBund.getSpaceTwo());
+                            int a=this.saveCarIdentifyV5(tabAiModelBund,path);
+                            if(a==0){
+                                return Result.OK("识别图片成功！");
+                            }
+                        }else{
+                            int a=this.saveIdentifyYolov5(tabAiModelBund,path);
+                            if(a==0){
+                                return Result.OK("识别图片成功！");
+                            }
                         }
+
                     }else{
                         // 输出视频
                         // tabAiHistoryService.saveIdentifyVideo(tabAiModelBund,uploadpath);
@@ -382,11 +453,11 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
                         this.saveIdentifyLocalVideoThreadV5(tabAiModelBund,path,userId);
                         return Result.OK("视频识别开始");
                     }
-
+                    break;
                 }//v5
                 case "3":
                 {  log.info("【进入V8开始识别内容】{}",tabAiModelBund.getSpaceTwo());
-                    log.info("【进入V5开始识别内容】{}",tabAiModelBund.getSpaceTwo());
+                    log.info("【进入V8开始识别内容】{}",tabAiModelBund.getSpaceTwo());
                     if(tabAiModelBund.getSpaceOne().equals("0")){ //当前为图片
                         int a=this.saveIdentifyYolov8(tabAiModelBund,path);
                         if(a==0){
@@ -402,8 +473,8 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
                         return Result.OK("视频识别开始");
                     }
                 }//v8
-                case "4": {}//json
-                case "5": {}//other
+                case "4": {    break;}//json
+                case "5": {    break;}//other
                 case "6": { //cv
                     log.info("【进入cv开始识别内容】{}",tabAiModelBund.getSpaceTwo());
                     if(tabAiModelBund.getSpaceTwo().equals("车牌识别")){
@@ -412,7 +483,18 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
                             return Result.OK("识别图片成功！");
                         }
                     }
+                    break;
                 }//json
+                case "7":{
+                    log.info("【进入OCR文字识别内容】{}",tabAiModelBund.getSpaceTwo());
+
+                        int a=this.saveStr(tabAiModelBund,path);
+                        if(a==0){
+                            return Result.OK("识别图片成功！");
+                        }
+
+                    break;
+                }
             }
 
 

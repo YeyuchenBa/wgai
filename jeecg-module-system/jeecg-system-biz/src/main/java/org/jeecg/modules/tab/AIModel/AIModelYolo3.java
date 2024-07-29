@@ -5,6 +5,9 @@ import ai.onnxruntime.OnnxValue;
 import ai.onnxruntime.OrtEnvironment;
 import ai.onnxruntime.OrtSession;
 import com.alibaba.fastjson.JSONObject;
+import com.benjaminwan.ocrlibrary.OcrResult;
+import io.github.mymonstercat.Model;
+import io.github.mymonstercat.ocr.InferenceEngine;
 import lombok.extern.slf4j.Slf4j;
 
 import net.sourceforge.tess4j.Tesseract;
@@ -138,6 +141,232 @@ public class AIModelYolo3 {
         return saveName+".jpg";
     }
 
+
+    /**
+     * 车牌识别图片
+     * @param weight
+     * @param picUrl
+     * @param saveName
+     * @param uploadpath
+     * @return
+     * @throws Exception
+     */
+    public  Map<String,Object> SendPicOpencvCarV5(String weight,String picUrl,String saveName,String uploadpath) throws Exception {
+        Map<String,Object> map=new HashMap<>();
+        log.info(uploadpath);
+        Long a=System.currentTimeMillis();
+        // 加载类别名称
+//        List<String> classes = Files.readAllLines(Paths.get(uploadpath+ File.separator +names));
+        // 加载YOLOv5模型
+
+        log.info("weight地址{}",uploadpath+ File.separator +weight);
+        Net net = Dnn.readNetFromONNX(uploadpath+ File.separator +weight);
+        // 读取输入图像
+        log.info("图片地址{}",uploadpath+ File.separator +picUrl);
+        Mat image = Imgcodecs.imread(uploadpath+ File.separator +picUrl);
+        log.info("图片地址{}",image);
+
+        Mat blob = Dnn.blobFromImage(image, 1 / 255.0, new Size(640, 640), new Scalar(0), true, false);
+        net.setInput(blob);
+
+        List<Mat> result = new ArrayList<>();
+        List<String> outBlobNames = getOutputNames(net);
+        net.forward(result, outBlobNames);
+        System.out.println(Arrays.asList(outBlobNames));
+        if (result.isEmpty()) {
+            System.err.println("Failed to get output from the model.");
+            map.put("isOk",false);
+            return map;
+        }
+
+
+        float confThreshold = 0.3f;
+        float nmsThreshold = 0.4f;
+
+        List<Rect2d> boxes2d = new ArrayList<>();
+        List<Float> confidences = new ArrayList<>();
+        List<Integer> classIds = new ArrayList<>();
+
+        for (Mat output : result) {
+            int dims = output.dims();
+            int index = (int) output.size(0);
+            int rows = (int) output.size(1);
+            int cols = (int) output.size(2);
+            // Dims: 3, Rows: 25200, Cols: 8 row,Mat [ 1*25200*8*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x28dce2da990, dataAddr=0x28dd0ebc640 ]index:1
+            System.out.println("Dims: " + dims + ", Rows: " + rows + ", Cols: " + cols+" row,"+output.row(0)+"index:"+index);
+            Mat detectionMat = output.reshape(1, output.size(1));
+
+            for (int i = 0; i < detectionMat.rows(); i++) {
+                Mat detection = detectionMat.row(i);
+                Mat scores = detection.colRange(5, cols);
+                Core.MinMaxLocResult minMaxResult = Core.minMaxLoc(scores);
+                float confidence = (float)detection.get(0, 4)[0];
+                Point classIdPoint = minMaxResult.maxLoc;
+
+                if (confidence > confThreshold) {
+                    float centerX = (float)detection.get(0, 0)[0];
+                    float centerY = (float)detection.get(0, 1)[0];
+                    float width = (float)detection.get(0, 2)[0];
+                    float height = (float)detection.get(0, 3)[0];
+
+                    float left = centerX - width / 2;
+                    float top = centerY - height / 2;
+
+                    classIds.add((int)classIdPoint.x);
+                    confidences.add(confidence);
+                    boxes2d.add(new Rect2d(left, top, width, height));
+                    //  System.out.println("识别到了");
+                }
+            }
+        }
+
+// 应用非极大值抑制
+        MatOfRect2d boxes_mat = new MatOfRect2d();
+        boxes_mat.fromList(boxes2d);
+
+        MatOfFloat confidences_mat = new MatOfFloat(Converters.vector_float_to_Mat(confidences));
+        MatOfInt indices = new MatOfInt();
+        Dnn.NMSBoxes(boxes_mat, confidences_mat, confThreshold, nmsThreshold, indices);
+        if (!boxes_mat.empty() && !confidences_mat.empty()) {
+            System.out.println("不为空");
+            Dnn.NMSBoxes(boxes_mat, confidences_mat, confThreshold, nmsThreshold, indices);
+        }
+        int c=0;
+        int[] indices_arr = indices.toArray();
+        String plateNumber="";
+        String plateColor="";
+        for (int idx : indices_arr) {
+            Rect2d box = boxes2d.get(idx);
+
+            int classId = classIds.get(idx);
+            float conf = confidences.get(idx);
+            double x=box.x;
+            double y=box.y;
+            double width=box.width*((double)image.cols()/640);
+            double height=box.height*((double)image.rows()/640);
+            double xzb=x*((double)image.cols()/640);
+            double yzb=y*((double)image.rows()/640);
+            System.out.println("绘制1"+"x:"+x+"y:"+ y+"");
+            System.out.println("绘制1"+"width:"+width+"height:"+ height+"");
+            System.out.println(" image.cols()"+ Double.valueOf((double)image.cols()/640));
+            System.out.println(" image.rows()"+Double.valueOf((double)image.rows()/640));
+
+            Rect rect=new Rect((int)Math.round(xzb), (int)Math.round(yzb), (int) Math.round(width), (int)Math.round(height));
+            Mat plaateimage = Imgcodecs.imread(uploadpath+ File.separator +picUrl);
+            Mat plateMat = new Mat(plaateimage, rect);
+
+
+            plateNumber += carStr(plateMat,uploadpath)+";";
+
+            plateColor += carColorStr(plateMat)+";";
+
+            System.out.println("车牌号码: " + plateNumber);
+            System.out.println("车牌颜色: " + plateColor);
+
+            // 在原图上绘制检测结果
+            Imgproc.rectangle(image, rect, new Scalar(0, 255, 0), 2);
+            Imgproc.putText(image, "plateNumber", new Point(rect.x, rect.y - 10),
+                    Imgproc.FONT_HERSHEY_SIMPLEX, 0.9, new Scalar(0, 255, 0), 2);
+
+
+
+            c++;
+        }
+        String savepath=uploadpath + File.separator + "temp" + File.separator;
+
+        if(StringUtils.isNotBlank(saveName)){
+            savepath+=saveName+".jpg";
+        }else{
+            saveName=System.currentTimeMillis()+"";
+            savepath+=saveName+".jpg";
+        }
+        log.info(savepath);
+        Imgcodecs.imwrite(savepath, image);
+        Long b=System.currentTimeMillis();
+        log.info("消耗时间："+(b-a));
+        map.put("url",saveName+".jpg");
+        map.put("color",plateColor);
+        map.put("plate",plateNumber);
+        map.put("isOk",true);
+        log.info("车牌号码: " + plateNumber);
+        log.info("车牌颜色: " + plateColor);
+        return map;
+    }
+
+    /***
+     * 返回车牌识别文字内容
+     * @param url
+     * @return
+     */
+    public static String carStr(Mat url,String uploadpath){
+        String savepath=uploadpath + File.separator + "temp" + File.separator;
+        savepath+=System.currentTimeMillis()+".jpg";
+        Imgcodecs.imwrite(savepath, url);
+        InferenceEngine engine = InferenceEngine.getInstance(Model.ONNX_PPOCR_V3);
+        OcrResult ocrResult = engine.runOcr(savepath);
+        return  ocrResult.getStrRes().trim().replaceAll(" ","");
+    }
+
+
+    /***
+     * 返回图片识别文字内容
+     * @param url
+     * @return
+     */
+    public static String imageStr(String url,String path){
+
+        InferenceEngine engine = InferenceEngine.getInstance(Model.ONNX_PPOCR_V3);
+        OcrResult ocrResult = engine.runOcr(path+File.separator+url);
+        return  ocrResult.getStrRes().trim().replaceAll(" ","");
+    }
+    /***
+     * 返回车牌颜色
+     * @param
+     * @return
+     */
+    public static String carColorStr(Mat image){
+        Mat gray = new Mat();
+        Imgproc.cvtColor(image, gray, Imgproc.COLOR_BGR2GRAY);
+        Mat plateRegion = image.clone();
+        // 将车牌区域转换为 HSV 颜色空间
+        Mat hsv = new Mat();
+        Imgproc.cvtColor(plateRegion, hsv, Imgproc.COLOR_BGR2HSV);
+        // 定义颜色范围（HSV）
+        Scalar lowerBlue = new Scalar(100, 150, 150);
+        Scalar upperBlue = new Scalar(140, 255, 255);
+
+        Scalar lowerGreen = new Scalar(35, 100, 100);
+        Scalar upperGreen = new Scalar(85, 255, 255);
+
+        Scalar lowerWhite = new Scalar(0, 0, 200);
+        Scalar upperWhite = new Scalar(180, 50, 255);
+
+        Scalar lowerYellow = new Scalar(20, 100, 100);
+        Scalar upperYellow = new Scalar(30, 255, 255);
+        // 创建掩模
+        Mat maskBlue = new Mat();
+        Core.inRange(hsv, lowerBlue, upperBlue, maskBlue);
+
+        Mat maskGreen = new Mat();
+        Core.inRange(hsv, lowerGreen, upperGreen, maskGreen);
+
+        Mat maskWhite = new Mat();
+        Core.inRange(hsv, lowerWhite, upperWhite, maskWhite);
+
+        Mat maskYellow = new Mat();
+        Core.inRange(hsv, lowerYellow, upperYellow, maskYellow);
+
+        // 计算掩模区域的面积
+        double blueArea = Core.countNonZero(maskBlue);
+        double greenArea = Core.countNonZero(maskGreen);
+        double whiteArea = Core.countNonZero(maskWhite);
+        double yellowArea = Core.countNonZero(maskYellow);
+
+        // 判断车牌颜色
+        String colorName = getColorName(blueArea, greenArea, whiteArea, yellowArea);
+        return colorName;
+    }
+
     /**
      * 车牌识别内容
      * @param picUrl
@@ -145,87 +374,145 @@ public class AIModelYolo3 {
      * @throws Exception
      */
     public static String SendPicOpencvCarStr(String picUrl) throws Exception {
-        Tesseract tesseract = new Tesseract();
-
-        // 设置 Tesseract 数据路径（包含 tessdata 文件夹）
-        tesseract.setDatapath("F:\\JAVAAI\\tessdata");
-
-        // 设置语言为英文
-        tesseract.setLanguage("eng");
 
 
+        Mat plate = Imgcodecs.imread(picUrl);
+
+        // 转换为灰度图像
+        Imgproc.cvtColor(plate, plate, Imgproc.COLOR_BGR2GRAY);
+//        // 二值化处理
+        Imgproc.threshold(plate, plate, 0, 255, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
+//          //去噪声
+//        Imgproc.medianBlur(plate, plate, 3);
+//        //. 形态学操作
+//        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new org.opencv.core.Size(3, 3));
+//        Imgproc.dilate(plate, plate, kernel);
+        // 图像增强：调整对比度和亮度
+    //    plate.convertTo(plate, -1, 1.2, 30); // 增强对比度和亮度
+
+        // 保存车牌区域以便 OCR 处理
+        // 保存结果图像
+        String savepath="F:\\JAVAAI\\tessdata\\";
+
+
+            String saveName=System.currentTimeMillis()+"";
+            savepath+=saveName+".jpg";
+
+        log.info("保存路径: " + savepath);
+        Imgcodecs.imwrite(savepath, plate);
         // 识别车牌字符
-        String result = tesseract.doOCR(new File(picUrl));
+        String result ="";
+        try {
+          //  result = carStr(savepath);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        //tesseract.doOCR(new File(picUrl));
         System.out.println("识别结果: " + result);
         return result;
     }
 
-    public static void main(String[] args) throws Exception {
-        //  SendPicOpencvCarStr("C:\\Users\\Administrator\\Downloads\\bb_1718101657596_1718182097476.png");
-        // System.load("F:\\JAVAAI\\opencv\\build\\java\\x64\\opencv_java3416.dll");
-        System.load("F:\\JAVAAI\\opencv481\\opencv\\build\\java\\x64\\opencv_java481.dll");
-        //   SendPicYoloV3("yolov3.weights","yolov3.cfg","coco.names","car.jpg","test","F:\\JAVAAI\\yolo3\\yuanshi");
-            SendPicYoloV5("NBplate.onnx","coco.names","writecat.jpg","","F:\\JAVAAI\\yolov5");
-    //    SendPicYoloV5Car("NBplate.onnx","coco.names","bluecar.jpg","","F:\\JAVAAI\\yolov5");
-        String rtspUrl="rtsp://admin:ch255899@192.168.0.200/Streaming/Channels/102";
+    /**
+     * 根据掩模区域的面积判断颜色
+     * @param blueArea 蓝色掩模区域的面积
+     * @param greenArea 绿色掩模区域的面积
+     * @param whiteArea 白色掩模区域的面积
+     * @param yellowArea 黄色掩模区域的面积
+     * @return 车牌颜色名称
+     */
+    public static String getColorName(double blueArea, double greenArea, double whiteArea, double yellowArea) {
+        double maxArea = Math.max(Math.max(blueArea, greenArea), Math.max(whiteArea, yellowArea));
 
-//        String rtspUrl = "rtsp://[用户名]:[密码]@[IP地址]:[端口]/[码流类型]";
-
-        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(rtspUrl);
-        OpenCVFrameConverter.ToMat converterToMat = new OpenCVFrameConverter.ToMat();
-        VideoWriter videoWriter = new VideoWriter();
-        try {
-            grabber.setOption("rtsp_transport", "tcp"); // 使用TCP而不是UDP
-            grabber.start();
-            System.out.println("连接到RTSP流成功");
-            Java2DFrameConverter converter = new Java2DFrameConverter();
-            Frame frame;
-            int a=0;
-
-            FrameRecorder recorder = FrameRecorder.createDefault("F:\\JAVAAI\\model\\test3\\test1.mp4", grabber.getImageWidth(), grabber.getImageHeight());
-            recorder.setVideoCodec(grabber.getVideoCodec());
-            recorder.setFormat("mp4");
-            recorder.start();
-
-            while ((frame = grabber.grab()) != null) {
-
-                // 将Frame转换为JavaCV的Mat
-                int width=frame.imageWidth;
-                int height=frame.imageHeight;
-                System.out.println("成功获取帧宽度"+width+"高度:"+height);
-                Mat opencvMat=bufferedImageToMat(   converter.getBufferedImage(frame));
-                if(a<=200){
-                    // 录制帧 b释放才会保存
-                    Frame processedFrame = converterToFrame(opencvMat);
-                    recorder.record(processedFrame);
-//                    Imgcodecs.imwrite("F:\\JAVAAI\\model\\test3\\test"+a+".jpg", opencvMat);
-//                    saveVideo( opencvMat, frame, videoWriter,"F:\\JAVAAI\\model\\test3\\test1.mp4");
-
-                    // 将处理后的帧发送给所有连接的客户端
-          //          broadcastFrame(processedFrame);
-                }else {
-                    break;
-                }
-                a++;
-
-
-                // 显示帧（如果您想要显示视频）
-             //   canvasFrame.showImage(frame);
-
-                // 在这里可以对帧进行处理
-                // 例如：保存帧、分析帧内容等
-            }
-
-            grabber.stop();
-            grabber.release();
-
-            recorder.stop();
-            recorder.release();
-       //     canvasFrame.dispose();
-        } catch (Exception e) {
-            System.err.println("发生错误: " + e.getMessage());
-            e.printStackTrace();
+        if (maxArea == blueArea) {
+            return "蓝色";
+        } else if (maxArea == greenArea) {
+            return "绿色";
+        } else if (maxArea == whiteArea) {
+            return "白色";
+        } else if (maxArea == yellowArea) {
+            return "黄色";
+        } else {
+            return "未知颜色";
         }
+    }
+    public static void main(String[] args) throws Exception {
+        System.load("F:\\JAVAAI\\opencv481\\opencv\\build\\java\\x64\\opencv_java481.dll");
+        Mat image = Imgcodecs.imread("F:\\JAVAAI\\tessdata\\green\\c.png");
+
+
+        // 输出颜色名称
+        System.out.println("车牌颜色名称: " +carColorStr(image));
+
+//        SendPicOpencvCarStr("F:\\JAVAAI\\tessdata\\1722241390893.png");
+
+//            InferenceEngine engine = InferenceEngine.getInstance(Model.ONNX_PPOCR_V3);
+//            OcrResult ocrResult = engine.runOcr("F:\\JAVAAI\\tessdata\\ws.jpg");
+//            log.info("当前结果为："+ocrResult.getStrRes().trim().replaceAll(" ",""));
+     //   System.out.println( ocrResult.getStrRes().replace("\n", ""));
+        // System.load("F:\\JAVAAI\\opencv\\build\\java\\x64\\opencv_java3416.dll");
+
+//        //   SendPicYoloV3("yolov3.weights","yolov3.cfg","coco.names","car.jpg","test","F:\\JAVAAI\\yolo3\\yuanshi");
+//            SendPicYoloV5("NBplate.onnx","coco.names","writecat.jpg","","F:\\JAVAAI\\yolov5");
+//    //    SendPicYoloV5Car("NBplate.onnx","coco.names","bluecar.jpg","","F:\\JAVAAI\\yolov5");
+//        String rtspUrl="rtsp://admin:ch255899@192.168.0.200/Streaming/Channels/102";
+//
+////        String rtspUrl = "rtsp://[用户名]:[密码]@[IP地址]:[端口]/[码流类型]";
+//
+//        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(rtspUrl);
+//        OpenCVFrameConverter.ToMat converterToMat = new OpenCVFrameConverter.ToMat();
+//        VideoWriter videoWriter = new VideoWriter();
+//        try {
+//            grabber.setOption("rtsp_transport", "tcp"); // 使用TCP而不是UDP
+//            grabber.start();
+//            System.out.println("连接到RTSP流成功");
+//            Java2DFrameConverter converter = new Java2DFrameConverter();
+//            Frame frame;
+//            int a=0;
+//
+//            FrameRecorder recorder = FrameRecorder.createDefault("F:\\JAVAAI\\model\\test3\\test1.mp4", grabber.getImageWidth(), grabber.getImageHeight());
+//            recorder.setVideoCodec(grabber.getVideoCodec());
+//            recorder.setFormat("mp4");
+//            recorder.start();
+//
+//            while ((frame = grabber.grab()) != null) {
+//
+//                // 将Frame转换为JavaCV的Mat
+//                int width=frame.imageWidth;
+//                int height=frame.imageHeight;
+//                System.out.println("成功获取帧宽度"+width+"高度:"+height);
+//                Mat opencvMat=bufferedImageToMat(   converter.getBufferedImage(frame));
+//                if(a<=200){
+//                    // 录制帧 b释放才会保存
+//                    Frame processedFrame = converterToFrame(opencvMat);
+//                    recorder.record(processedFrame);
+////                    Imgcodecs.imwrite("F:\\JAVAAI\\model\\test3\\test"+a+".jpg", opencvMat);
+////                    saveVideo( opencvMat, frame, videoWriter,"F:\\JAVAAI\\model\\test3\\test1.mp4");
+//
+//                    // 将处理后的帧发送给所有连接的客户端
+//          //          broadcastFrame(processedFrame);
+//                }else {
+//                    break;
+//                }
+//                a++;
+//
+//
+//                // 显示帧（如果您想要显示视频）
+//             //   canvasFrame.showImage(frame);
+//
+//                // 在这里可以对帧进行处理
+//                // 例如：保存帧、分析帧内容等
+//            }
+//
+//            grabber.stop();
+//            grabber.release();
+//
+//            recorder.stop();
+//            recorder.release();
+//       //     canvasFrame.dispose();
+//        } catch (Exception e) {
+//            System.err.println("发生错误: " + e.getMessage());
+//            e.printStackTrace();
+//        }
 
 
 
