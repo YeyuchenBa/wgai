@@ -72,7 +72,7 @@
 ## - 轻量级内核轻训练 
 
 > 这个轻量级主要是使用的easyui内核  [<span style="color: red;">@easyAi轻量级内核地址</span>](https://gitee.com/dromara/easyAi) 他们有自己的内容训练内存消耗少训练时间短面对特定识别内容效率很高
-> 由于时间有限暂未完全接入需要的同学可自主继续接入 
+> 由于时间有限暂未完全接入，有需要的同学可自主继续接入 
 
 ### 图片模型
 ![modelBund](wg/piclist.jpg)
