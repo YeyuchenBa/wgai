@@ -31,7 +31,7 @@
 ## - 自主图片视频识别
 
 ###  首页       
->监管redis、jvm、服务器cpu 主要是cpu 尤为重要.
+>监管redis、jvm、服务器cpu 主要是cpu 尤为重要
 
 ![index](wg/index.jpg)
 
@@ -41,7 +41,7 @@
 ![model](wg/model.jpg)
 
 ### 模型库绑定     
->支持图片上传、图片地址、视频地址、rtsp、rtmp、flv、fmp4、不支持静态mp4播放，但支持识别 因为播放器控件不允许静态文件播放
+>支持图片上传、图片地址、视频地址、rtsp、rtmp、flv、fmp4、不支持静态mp4播放，但支持识别；因为播放器控件不允许静态文件播放
 
 ![modelBund](wg/modelBund.jpg)
 ### 图片识别 
