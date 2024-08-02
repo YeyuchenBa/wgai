@@ -4,6 +4,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import net.ailemon.asrt.sdk.BaseSpeechRecognizer;
+import net.ailemon.asrt.sdk.Sdk;
+import net.ailemon.asrt.sdk.common.Common;
+import net.ailemon.asrt.sdk.models.AsrtApiResponse;
+import net.ailemon.asrt.sdk.models.Wave;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.javacv.*;
 import org.jeecg.common.api.vo.Result;
@@ -17,6 +22,7 @@ import org.jeecg.modules.demo.tab.mapper.TabAiHistoryMapper;
 import org.jeecg.modules.demo.tab.service.ITabAiHistoryService;
 import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.monitor.service.RedisService;
+import org.jeecg.modules.system.controller.wavUtil;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.tab.AIModel.AIModelYolo3;
 import org.jeecg.modules.tab.AIModel.VideoSendReadCfg;
@@ -32,7 +38,7 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import javax.annotation.Resource;
-import java.io.ByteArrayOutputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +72,105 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
     @Resource
     RedisTemplate redisTemplate;
 
+    public String WGAIAudio="wgaiaudio";
+
+    @Override
+    public Result<?> aiAudio(String path,String uplpadPath) {
+        String host = "43.142.3.140";
+        String port = "20001";
+        String protocol = "http";
+        BaseSpeechRecognizer sr = Sdk.GetSpeechRecognizer(host, port, protocol);
+        String filename = uplpadPath+ File.separator+path;
+        if(path.indexOf(WGAIAudio)<=-1){
+            Result<String> result=waveInt16(filename,uplpadPath, System.currentTimeMillis()+"_"+WGAIAudio+".wav");
+            if(result.isSuccess()){
+                filename= uplpadPath+ File.separator+result.getMessage();
+                log.info("【转换16通道音频完成 删除原版文件重新保存】");
+                //删除本地文件
+            }else{
+                log.error("【转换16通道音频出现问题】");
+            }
+
+        }
+        //"D:\\opt\\upFiles\\temp\\audio_1722564524738.wav";
+        // ============================================
+        // 直接调用ASRT识别语音文件
+        AsrtApiResponse rsp = sr.RecogniteFile(filename);
+        System.out.println(rsp.statusCode);
+        System.out.println(rsp.statusMessage);
+        System.out.println(rsp.result);
+        return Result.OK(rsp.result);
+    }
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        String path="wgaiaudio";
+        System.out.println(path.indexOf("wgaiaudio"));
+
+        System.out.println(path.indexOf("222"));
+//        String host = "43.142.3.140";
+//        String port = "20001";
+//        String protocol = "http";
+//        BaseSpeechRecognizer sr = Sdk.GetSpeechRecognizer(host, port, protocol);
+//        String filename = "D:\\opt\\upFiles\\temp\\audio_1722564524738.wav";
+//        if(args.length > 0){
+//            filename = args[0];
+//        }
+
+//
+//        // ============================================
+//        // 直接调用ASRT识别语音文件
+//        AsrtApiResponse rsp = sr.RecogniteFile(filename);
+//        System.out.println(rsp.statusCode);
+//        System.out.println(rsp.statusMessage);
+//        System.out.println(rsp.result);
+//
+//        // ============================================
+//        // 调用ASRT识别语音序列
+//        byte[] wavBytes = Common.readBinFile(filename);
+//        Wave wav = new Wave();
+//        wav.deserialize(wavBytes);
+//        byte[] sampleBytes = wav.getRawSamples();
+//        int sampleRate = wav.sampleRate;
+//        int channels = wav.channels;
+//        int byteWidth = wav.sampleWidth;
+//        rsp = sr.Recognite(sampleBytes, sampleRate, channels, byteWidth);
+//        System.out.println("zzz"+rsp.statusCode);
+//        System.out.println("zzz"+rsp.statusMessage);
+//        System.out.println("zzz"+rsp.result);
+//
+//        // ============================================
+//        // 调用ASRT声学模型识别语音序列
+//        wavBytes = Common.readBinFile(filename);
+//        wav = new Wave();
+//        wav.deserialize(wavBytes);
+//        sampleBytes = wav.getRawSamples();
+//        sampleRate = wav.sampleRate;
+//        channels = wav.channels;
+//        byteWidth = wav.sampleWidth;
+//        rsp = sr.RecogniteSpeech(sampleBytes, sampleRate, channels, byteWidth);
+//        System.out.println("jjj"+rsp.statusCode);
+//        System.out.println("jjj"+rsp.statusMessage);
+//        System.out.println("jjj"+rsp.result);
+//
+//        // ============================================
+//        // 调用ASRT语言模型识别拼音序列1
+//        String[] pinyins = ((String)rsp.result).split(", ");
+//        rsp = sr.RecogniteLanguage(pinyins);
+//        System.out.println("xxx"+rsp.statusCode);
+//        System.out.println("xxx"+rsp.statusMessage);
+//        System.out.println("xxx"+rsp.result);
+//
+//        // ============================================
+//        // 调用ASRT语言模型识别拼音序列2
+//        pinyins = new String[]{"ni3", "hao"};
+//        rsp = sr.RecogniteLanguage(pinyins);
+//        System.out.println("yyy"+rsp.statusCode);
+//        System.out.println("yyy"+rsp.statusMessage);
+//        System.out.println("yyy"+rsp.result);
+     //   waveInt16("","");
+    }
+
     @Override
     public int saveStr(TabAiModelBund tabAiModelBund,String path) {
         Long a=System.currentTimeMillis();
@@ -93,6 +198,72 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
 
     }
 
+    @Override
+    public int saveAudioStr(TabAiModelBund tabAiModelBund, String path) {
+        Long a=System.currentTimeMillis();
+        LambdaQueryWrapper< TabAiModel> query = new LambdaQueryWrapper<>();
+        TabAiModel tabAiModel1=modelMapper.selectById(tabAiModelBund.getModelName());
+
+        try {
+            Result<?>  savePath=this.aiAudio(tabAiModelBund.getSaveUrl(),path);
+            log.info("语音识别文字内容{}",savePath);
+            Long b=System.currentTimeMillis();
+            TabAiHistory tabAiHistory=new TabAiHistory();
+            tabAiHistory.setBundName(tabAiModel1.getAiName());
+            tabAiHistory.setModelName(tabAiModel1.getAiName());
+            tabAiHistory.setModelId(tabAiModelBund.getModelName());
+            tabAiHistory.setSendUrl(tabAiModelBund.getSaveUrl());
+            tabAiHistory.setSendTime(b-a+"");
+            if(savePath.isSuccess()){
+                tabAiHistory.setSendMsg((String) savePath.getResult());
+            }else{
+                tabAiHistory.setSendMsg("未识别出");
+            }
+            tabAiHistory.setRemake(" 音频识别不显示图片");
+            tabAiHistoryMapper.insert(tabAiHistory);
+            return 0;
+        }catch (Exception ex){
+            log.warn("出错{}",ex);
+            ex.printStackTrace();
+            return 1;
+        }
+    }
+
+    public  static  Result<String> waveInt16(String url,String path,String name){
+
+        String ffmpegCommand = "ffmpeg -y -i "+url+" -ac 1 -ar 16000  "+path+File.separator+name;
+
+        System.out.println(ffmpegCommand);
+        try {
+            // 启动进程
+            Process process = Runtime.getRuntime().exec(ffmpegCommand);
+
+            // 获取进程的输出流（标准输出和错误输出）
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            String line;
+            // 读取标准输出
+            while ((line = stdInput.readLine()) != null) {
+                System.out.println(line);
+            }
+
+            // 读取错误输出
+            while ((line = stdError.readLine()) != null) {
+                System.err.println(line);
+            }
+
+            // 等待进程完成
+            int exitCode = process.waitFor();
+            System.out.println("进程退出码: " + exitCode);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("失败");
+        }
+
+        return Result.OK(name);
+    }
     @Override
     public int saveCarIdentify(TabAiModelBund tabAiModelBund, String path) {
         Long a=System.currentTimeMillis();
@@ -492,6 +663,16 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
                         if(a==0){
                             return Result.OK("识别图片成功！");
                         }
+
+                    break;
+                }
+                case "9":{
+                    log.info("【进入音频内容】{}",tabAiModelBund.getSpaceTwo());
+
+                    int a=this.saveAudioStr(tabAiModelBund,path);
+                    if(a==0){
+                        return Result.OK("识别图片成功！");
+                    }
 
                     break;
                 }
