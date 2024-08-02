@@ -14,13 +14,17 @@
 # 直接上手
 
 ## 下载即可使用 
-> springboot+vue+mysql 支持国产化数据库 配置内容不再详细赘述 如果java 薄弱建议先学习java 再来使用
+> springboot+vue+mysql 支持国产化数据库 配置内容不再详细赘述 如果java 薄弱建议先学习java 再来使用  前端在VUE分支！！！
 
 > [<span style="color: red;">@gitee仓库地址</span>](https://gitee.com/wggh_admin/wgai)
 
 >[<span style="color: red;">@github仓库地址</span>](https://github.com/YeyuchenBa/wgai)
 
 # 新功能截图和功能介绍配置
+## 目前支持语音识别鉴于我没有https 额外增加了一个静态音频识别的内容
+![yuyin](wg/yuyin.jpg)
+![yuyinshibie](wg/yuyinshibie.jpg)
+![yuyinbund](wg/yuyinbund.jpg)
 ## 目前支持 蓝牌、绿牌、黄牌、白牌、车辆车牌识别
 ![chepaishibie](wg/chepaishibie.gif)
 
