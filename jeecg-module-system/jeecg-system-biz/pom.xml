@@ -66,6 +66,12 @@
 			<artifactId>javacv-platform</artifactId>
 			<version>1.5.10</version>
 		</dependency>
+
+		<dependency>
+			<groupId>net.ailemon.asrt</groupId>
+			<artifactId>sdk</artifactId>
+			<version>1.0-alpha1</version>
+		</dependency>
 		<!-- 积木报表 mongo redis 支持包
         <dependency>
             <groupId>org.jeecgframework.jimureport</groupId>

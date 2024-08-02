@@ -19,10 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
+import sun.net.www.content.audio.wav;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Base64;
 
 /**
  * <p>
@@ -93,6 +95,8 @@ public class CommonController {
             FileTypeFilter.fileTypeFilter(file);
             //update-end-author:liusq date:20221102 for: 过滤上传文件类型
             //update-begin-author:lvdandan date:20200928 for:修改JEditor编辑器本地上传
+
+
             savePath = this.uploadLocal(file,bizPath);
             //update-begin-author:lvdandan date:20200928 for:修改JEditor编辑器本地上传
             /**  富文本编辑器及markdown本地上传时，采用返回链接方式

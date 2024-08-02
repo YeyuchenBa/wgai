@@ -118,6 +118,21 @@ public class TabAiHistoryController extends JeecgController<TabAiHistory, ITabAi
 		 return tabAiHistoryService.startAi(tabAiModelBund,uploadpath,sysUser.getId());
 	 }
 
+
+	 /**
+	  *   添加识别结果
+	  *
+	  * @param
+	  * @return
+	  */
+	 @AutoLog(value = "AI语音结果识别结果历史-添加")
+	 @ApiOperation(value="AI语音结果识别结果历史-添加", notes="AI语音结果识别结果历史-添加")
+	 //@RequiresPermissions("org.jeecg.modules.demo:tab_ai_history:add")
+	 @GetMapping(value = "/addAudio")
+	 public Result<?> addAudio(@RequestParam(name="path",required=true) String path) {
+//		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 return tabAiHistoryService.aiAudio(path,uploadpath);
+	 }
 	 /**
 	  *   结束识别结果
 	  *

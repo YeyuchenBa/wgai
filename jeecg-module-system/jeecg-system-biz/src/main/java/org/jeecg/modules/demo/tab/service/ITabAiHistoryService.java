@@ -18,12 +18,27 @@ import org.jeecg.modules.tab.entity.TabAiModel;
 public interface ITabAiHistoryService extends IService<TabAiHistory> {
 
 
+
+    /**
+     * 语音识别内容文字
+     * @param path 文件地址
+     * @return
+     */
+    public Result<?> aiAudio(String path,String uplopadPath);
+
     /**
      * 识别内容文字
      * @param tabAiModelBund
      * @return
      */
     public int saveStr(TabAiModelBund tabAiModelBund,String path);
+
+    /**
+     * 识别语音文字
+     * @param tabAiModelBund
+     * @return
+     */
+    public int saveAudioStr(TabAiModelBund tabAiModelBund,String path);
     /**
      * 添加车牌识别
      * @param
@@ -102,4 +117,6 @@ public interface ITabAiHistoryService extends IService<TabAiHistory> {
 
     void sendUrl();
     void sendUrlFLV() throws FFmpegFrameGrabber.Exception, FFmpegFrameRecorder.Exception;
+
+
 }

@@ -29,8 +29,8 @@ public class JeecgSystemApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) throws UnknownHostException {
        // System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-      //  System.load("F:\\JAVAAI\\opencv481\\opencv\\build\\java\\x64\\opencv_java481.dll");
-        System.load("F:\\JAVAAI\\opencv\\build\\java\\x64\\opencv_java481.dll");
+        System.load("F:\\JAVAAI\\opencv481\\opencv\\build\\java\\x64\\opencv_java481.dll");
+       // System.load("C:\\JAVAAI\\opencv\\build\\java\\x64\\opencv_java481.dll");
         ConfigurableApplicationContext application = SpringApplication.run(JeecgSystemApplication.class, args);
         Environment env = application.getEnvironment();
         String ip = InetAddress.getLocalHost().getHostAddress();

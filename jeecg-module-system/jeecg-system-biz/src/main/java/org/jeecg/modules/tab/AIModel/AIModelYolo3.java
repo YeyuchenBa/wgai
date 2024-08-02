@@ -319,6 +319,18 @@ public class AIModelYolo3 {
         OcrResult ocrResult = engine.runOcr(path+File.separator+url);
         return  ocrResult.getStrRes().trim().replaceAll(" ","");
     }
+
+    /***
+     * 返回语音识别文字内容
+     * @param url
+     * @return
+     */
+    public static String audioStr(String url,String path){
+
+        InferenceEngine engine = InferenceEngine.getInstance(Model.ONNX_PPOCR_V3);
+        OcrResult ocrResult = engine.runOcr(path+File.separator+url);
+        return  ocrResult.getStrRes().trim().replaceAll(" ","");
+    }
     /***
      * 返回车牌颜色
      * @param
