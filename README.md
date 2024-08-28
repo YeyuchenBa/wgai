@@ -110,6 +110,9 @@
 ### 微信交流群
 ## 加微信技术交流群（目前只有微信交流群）
 ![加交流群](wg/chatpic.jpg) 
+捐赠一杯咖啡  点个start  赠送AI武功秘籍
+![wx](wg/wechat.jpg) 
+![zfb](wg/zfb.jpg) 
 
 
 
