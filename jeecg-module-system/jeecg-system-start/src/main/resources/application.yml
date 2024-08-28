@@ -3,3 +3,4 @@ spring:
     name: jeecg-system
   profiles:
     active: '@profile.name@'
+opencv: 'F:\JAVAAI\opencv481\opencv\build\java\x64\opencv_java481.dll'

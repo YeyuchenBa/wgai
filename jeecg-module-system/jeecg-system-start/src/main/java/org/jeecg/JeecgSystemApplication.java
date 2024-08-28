@@ -3,6 +3,7 @@ package org.jeecg;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.util.oConvertUtils;
 import org.opencv.core.Core;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -26,21 +27,29 @@ public class JeecgSystemApplication extends SpringBootServletInitializer {
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(JeecgSystemApplication.class);
     }
+    @Value("${opencv}")
+    private static String opencvpath;
+    @Value("${third-app.enabled}")
+    private static String opencvpath2;
+
 
     public static void main(String[] args) throws UnknownHostException {
        // System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        System.load("F:\\JAVAAI\\opencv481\\opencv\\build\\java\\x64\\opencv_java481.dll");
+
        // System.load("C:\\JAVAAI\\opencv\\build\\java\\x64\\opencv_java481.dll");
         ConfigurableApplicationContext application = SpringApplication.run(JeecgSystemApplication.class, args);
         Environment env = application.getEnvironment();
         String ip = InetAddress.getLocalHost().getHostAddress();
         String port = env.getProperty("server.port");
         String path = oConvertUtils.getString(env.getProperty("server.servlet.context-path"));
+        String opencvpath = env.getProperty("opencv");
+        System.load(opencvpath);
         log.info("\n----------------------------------------------------------\n\t" +
                 "Application Jeecg-Boot is running! Access URLs:\n\t" +
                 "Local: \t\thttp://localhost:" + port + path + "/\n\t" +
                 "External: \thttp://" + ip + ":" + port + path + "/\n\t" +
-                "Swagger文档: \thttp://" + ip + ":" + port + path + "/doc.html\n" +
+                "Swagger文档: \thttp://" + ip + ":" + port + path + "/doc.html\n\t" +
+                "opencvpath:"+opencvpath+"\n"+
                 "----------------------------------------------------------");
 
     }
