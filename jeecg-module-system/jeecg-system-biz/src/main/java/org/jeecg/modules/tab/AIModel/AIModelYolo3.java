@@ -18,6 +18,7 @@ import org.bytedeco.javacv.Frame;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.modules.demo.tab.entity.PushInfo;
 
+import org.jeecg.modules.demo.video.entity.TabVideoUtil;
 import org.jeecg.modules.message.websocket.WebSocket;
 
 
@@ -25,6 +26,9 @@ import org.jeecg.modules.tab.AIModel.V5.MapTime;
 import org.jeecg.modules.tab.AIModel.V5.VideoReadInfoV5;
 import org.jeecg.modules.tab.AIModel.V5.VideoReadV5;
 import org.jeecg.modules.tab.AIModel.V5.VideoReadtestV5;
+import org.jeecg.modules.tab.AIModel.V5Util.VideoReadInfoV5Util;
+import org.jeecg.modules.tab.AIModel.V5Util.VideoReadV5Util;
+import org.jeecg.modules.tab.AIModel.V5Util.VideoReadtestV5Util;
 import org.jeecg.modules.tab.util.CharRecognizer;
 import org.opencv.core.*;
 
@@ -161,6 +165,8 @@ public class AIModelYolo3 {
 
         log.info("weight地址{}",uploadpath+ File.separator +weight);
         Net net = Dnn.readNetFromONNX(uploadpath+ File.separator +weight);
+        net.setPreferableBackend(Dnn.DNN_BACKEND_CUDA);
+        net.setPreferableBackend(Dnn.DNN_TARGET_CUDA);
         // 读取输入图像
         log.info("图片地址{}",uploadpath+ File.separator +picUrl);
         Mat image = Imgcodecs.imread(uploadpath+ File.separator +picUrl);
@@ -1062,11 +1068,14 @@ public class AIModelYolo3 {
         log.info("cfg地址{}",uploadpath+ File.separator +cfg);
         log.info("weight地址{}",uploadpath+ File.separator +weight);
         Net net = Dnn.readNetFromDarknet(uploadpath+ File.separator +cfg, uploadpath+ File.separator +weight);
+        net.setPreferableBackend(Dnn.DNN_BACKEND_CUDA);
+        net.setPreferableBackend(Dnn.DNN_TARGET_CUDA);
         // 读取输入图像
         log.info("图片地址{}",uploadpath+ File.separator +picUrl);
         Mat image = Imgcodecs.imread(uploadpath+ File.separator +picUrl);
         // 将图像传递给模型进行目标检测
         Mat blob = Dnn.blobFromImage(image, 1.0 / 255, new Size(416, 416), new Scalar(0), true, false);
+
         net.setInput(blob);
         // 将图像传递给模型进行目标检测
         List<Mat> result = new ArrayList<>();
@@ -1169,6 +1178,10 @@ public class AIModelYolo3 {
         Net net = Dnn.readNetFromDarknet(uploadpath+ File.separator +cfg, uploadpath+ File.separator +weight);
         net.setPreferableBackend(Dnn.DNN_BACKEND_OPENCV);
         net.setPreferableTarget(Dnn.DNN_TARGET_CPU);
+
+//        net.setPreferableBackend(Dnn.DNN_BACKEND_CUDA);
+//        net.setPreferableTarget(Dnn.DNN_TARGET_CUDA);
+
         String savepath=uploadpath + File.separator + a + File.separator;
         File file=new File(savepath);
         if (!file.exists()) {
@@ -1574,6 +1587,51 @@ public class AIModelYolo3 {
         return "";
 
     }
+
+
+
+    /**
+     * 多线程处理视频帧区域入侵
+     * @param
+     * @return
+     */
+    public  String SendVideoLocalhostYoloV5ThreadVideoUtil(TabVideoUtil tabVideoUtil,String weight, String cfg, String names, String videoUrl, String uploadpath, WebSocket webSocket, RedisUtil redisUtil, RedisTemplate redisTemplate) throws Exception {
+        Long a=System.currentTimeMillis();
+
+
+        // 加载v5/v8模型
+        log.info("cfg地址{}",uploadpath+ File.separator +cfg);
+        log.info("weight地址{}",uploadpath+ File.separator +weight);
+        log.info("names{}",uploadpath+ File.separator +names);
+        // 计算每帧的时间消耗（单位：毫秒）
+        int maxIdleThreads = Runtime.getRuntime().availableProcessors();
+        log.info("当前主机最大空闲线程数：" + maxIdleThreads);
+        // 创建线程池
+        ExecutorService executor = Executors.newCachedThreadPool();
+        VideoSendReadCfg.StartTime=0;
+        log.info("videoUrl：" + videoUrl);
+        // 提交多个任务到线程池
+        for (int i = 0; i < 3; i++) {
+            //效果延迟了三秒
+            //     executor.submit(new VideoFrameReader(videoUrl,uploadpath+ File.separator +weight,uploadpath+ File.separator +cfg,uploadpath+ File.separator +names,redisUtil,webSocket,userId,i,redisTemplate));
+            if(i==0){
+                executor.submit(new VideoReadV5Util(tabVideoUtil,videoUrl,redisTemplate));
+            }else if(i==1){
+                executor.submit(new VideoReadInfoV5Util(tabVideoUtil,videoUrl,redisTemplate,uploadpath+ File.separator +names,uploadpath+ File.separator +cfg,uploadpath+ File.separator +weight,webSocket));
+            }else{
+                executor.submit(new VideoReadtestV5Util(tabVideoUtil,videoUrl,redisTemplate));
+            }
+            Thread.sleep(1000);
+        }
+        // 关闭线程池
+        // executor.shutdown();
+
+
+
+        return "";
+
+    }
+
     /***
      * 带线程推送
      *

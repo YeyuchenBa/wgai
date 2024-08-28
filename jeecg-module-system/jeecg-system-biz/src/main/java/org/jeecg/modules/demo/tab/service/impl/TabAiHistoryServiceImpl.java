@@ -519,7 +519,7 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
         }
         try {
 
-            String savePath=modelYolo3.SendVideoLocalhostYoloV3Thread(userId,tabAiModel1.getAiWeights(),tabAiModel1.getAiConfig(),tabAiModel1.getAiNameName(),tabAiModelBund.getSendUrl(),path,webSocket,redisUtil,redisTemplate);
+            String savePath=modelYolo3.SendVideoLocalhostYoloV5Thread(userId,tabAiModel1.getAiWeights(),tabAiModel1.getAiConfig(),tabAiModel1.getAiNameName(),tabAiModelBund.getSendUrl(),path,webSocket,redisUtil,redisTemplate);
             if(savePath.equals("error")){
                 return 1;
             }
