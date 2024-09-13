@@ -26,7 +26,7 @@ public class pushApi  implements Runnable {
     /**
      * 车牌识别内容
      * @param picUrl
-     * @return
+     * @return Optical Character Recognition
      * @throws Exception
      */
     public static String SendPicOpencvCarStr(String picUrl) throws Exception {
@@ -48,7 +48,7 @@ public class pushApi  implements Runnable {
         MatOfRect plates = new MatOfRect();
         plateCascade.detectMultiScale(src, plates, 1.1, 5, 0, new Size(),  new Size());
 //        plateCascade.detectMultiScale(src, plates);
-
+        // Optical Character Recognition
         Tesseract tesseract = new Tesseract();
         tesseract.setDatapath("F:\\JAVAAI\\tessdata");
         tesseract.setLanguage("eng+chi_sim");
