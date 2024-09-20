@@ -7,6 +7,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.demo.tab.entity.TabAiHistory;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.demo.tab.entity.TabAiModelBund;
+import org.jeecg.modules.demo.tab.entity.TabAiSubscription;
 import org.jeecg.modules.tab.entity.TabAiModel;
 
 /**
@@ -114,6 +115,12 @@ public interface ITabAiHistoryService extends IService<TabAiHistory> {
 
     Result<String> startAi(TabAiModelBund tabAiModelBund, String path, String userId);
 
+    /***
+     * 多组推送内容识别内容
+     *
+     * @return
+     */
+    Result<String> startAiPush(TabAiSubscription tabAiSubscription);
 
     void sendUrl();
     void sendUrlFLV() throws FFmpegFrameGrabber.Exception, FFmpegFrameRecorder.Exception;

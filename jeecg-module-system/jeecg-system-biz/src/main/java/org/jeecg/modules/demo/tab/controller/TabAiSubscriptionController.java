@@ -68,12 +68,15 @@ public class TabAiSubscriptionController extends JeecgController<TabAiSubscripti
 	RedisTemplate  redisTemplate;
 	 @Autowired
 	 private ITabAiBaseService tabAiBaseService;
-	 @ApiOperation(value="Ai事件订阅-test", notes="Ai事件订阅-test")
+
+	@ApiOperation(value="Ai事件订阅-test", notes="Ai事件订阅-test")
 	@RequestMapping(value = "/subInfo")
 	public List<PushInfo>  getSub(){
 		log.info("输出结果");
-		List<PushInfo> object1= (List<PushInfo> ) redisTemplate.opsForValue().get("sendPush");
+		 List<PushInfo> object1= (List<PushInfo> ) redisTemplate.opsForValue().get("sendPush");
+		 //中文写入缓存内容
 		 tabAiBaseService.SendRedisBase();
+
 		 AIModelYolo3  modelYolo3=new AIModelYolo3();
 		 modelYolo3.SendPicThread(redisTemplate);
 		return object1;
@@ -167,6 +170,7 @@ public class TabAiSubscriptionController extends JeecgController<TabAiSubscripti
 		if(tabAiSubscription1!=null){
 			return Result.error("已经存在请调用修改！");
 		}
+		tabAiSubscription.setRunState(0);
 		boolean flag=tabAiSubscriptionService.save(tabAiSubscription);
 		if(flag) {
 			tabAiSubscriptionService.insertRedisSubscription();
@@ -188,7 +192,7 @@ public class TabAiSubscriptionController extends JeecgController<TabAiSubscripti
 
 		tabAiSubscriptionService.updateById(tabAiSubscription);
 		tabAiSubscriptionService.insertRedisSubscription();
-		return Result.OK("编辑成功!");
+		return Result.OK("执行成功!");
 	}
 
 	 /**

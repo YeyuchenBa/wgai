@@ -3,6 +3,7 @@ package org.jeecg.modules.demo.tab.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import net.ailemon.asrt.sdk.BaseSpeechRecognizer;
 import net.ailemon.asrt.sdk.Sdk;
@@ -17,6 +18,7 @@ import org.jeecg.common.util.RedisUtil;
 import org.jeecg.modules.demo.tab.entity.TabAiBase;
 import org.jeecg.modules.demo.tab.entity.TabAiHistory;
 import org.jeecg.modules.demo.tab.entity.TabAiModelBund;
+import org.jeecg.modules.demo.tab.entity.TabAiSubscription;
 import org.jeecg.modules.demo.tab.mapper.TabAiBaseMapper;
 import org.jeecg.modules.demo.tab.mapper.TabAiHistoryMapper;
 import org.jeecg.modules.demo.tab.service.ITabAiHistoryService;
@@ -26,6 +28,8 @@ import org.jeecg.modules.system.controller.wavUtil;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.tab.AIModel.AIModelYolo3;
 import org.jeecg.modules.tab.AIModel.VideoSendReadCfg;
+import org.jeecg.modules.tab.AIModel.push.AiImgResult;
+import org.jeecg.modules.tab.AIModel.push.ReadVideoImg;
 import org.jeecg.modules.tab.entity.TabAiModel;
 import org.jeecg.modules.tab.mapper.TabAiModelMapper;
 import org.opencv.core.Mat;
@@ -40,8 +44,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import javax.annotation.Resource;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static org.jeecg.modules.tab.AIModel.AIModelYolo3.bufferedImageToMat;
@@ -681,6 +688,25 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
 
 
         }
+        return Result.error("识别失败未发现识别内容");
+    }
+
+
+
+    @Override
+    public Result<String>  startAiPush(TabAiSubscription tabAiSubscription) {
+
+        List<String> typesList= Arrays.asList(tabAiSubscription.getEventTypes().split(","));
+        QueryWrapper<TabAiModel> queryWrapper=new QueryWrapper<>();
+        queryWrapper.in("id",typesList);
+        List<TabAiModel> aiModel=modelMapper.selectList(queryWrapper);
+        BlockingQueue<Mat> queue = new LinkedBlockingQueue<>();
+        if(aiModel!=null){
+            new Thread(new ReadVideoImg(tabAiSubscription,redisTemplate,queue)).start();
+            new Thread(new AiImgResult(tabAiSubscription,redisTemplate,queue)).start();
+        }
+
+
         return Result.error("识别失败未发现识别内容");
     }
 

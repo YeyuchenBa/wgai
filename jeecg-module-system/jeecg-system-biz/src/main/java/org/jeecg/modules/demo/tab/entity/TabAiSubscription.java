@@ -83,4 +83,8 @@ public class TabAiSubscription implements Serializable {
     Integer pushStatic;
 
     String indexCode;
+    @Dict(dicCode = "run_state")
+    @ApiModelProperty(value = "执行状态")
+    Integer runState;
+
 }
