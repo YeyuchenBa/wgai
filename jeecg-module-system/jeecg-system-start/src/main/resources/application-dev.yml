@@ -7,7 +7,7 @@ server:
     include-stacktrace: ALWAYS
     include-message: ALWAYS
   servlet:
-    context-path: /jeecg-boot
+    context-path: /wgai
   compression:
     enabled: true
     min-response-size: 1024
@@ -148,7 +148,7 @@ spring:
     password: ''
 #mybatis plus 设置
 mybatis-plus:
-  mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
+  mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml,org/cuiot/modules/**/xml/*Mapper.xml
   global-config:
     # 关闭MP3.0自带的banner
     banner: false
@@ -164,7 +164,7 @@ mybatis-plus:
     call-setters-on-nulls: true
 #jeecg专用配置
 minidao:
-  base-package: org.jeecg.modules.jmreport.*
+  base-package: org.jeecg.modules.jmreport.*,cn.cuiot.modules.jmreport.*
 jeecg:
   # 是否启用安全模式
   safeMode: false
@@ -184,7 +184,7 @@ jeecg:
     #webapp文件路径
     webapp: opt/webapp
   shiro:
-    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
+    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**,/treeStudy/**,/cn/cuiot/**
   #阿里云oss存储和大鱼短信秘钥配置
   oss:
     accessKey: ??
@@ -237,6 +237,7 @@ cas:
 logging:
   level:
     org.jeecg.modules.system.mapper: debug
+    cn.cuiot.modules.system.mapper: debug
 #swagger
 knife4j:
   #开启增强配置
