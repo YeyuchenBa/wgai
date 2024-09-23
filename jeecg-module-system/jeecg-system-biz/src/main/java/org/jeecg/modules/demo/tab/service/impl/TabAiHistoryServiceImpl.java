@@ -703,7 +703,7 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
         BlockingQueue<Mat> queue = new LinkedBlockingQueue<>();
         if(aiModel!=null){
             new Thread(new ReadVideoImg(tabAiSubscription,redisTemplate,queue)).start();
-            new Thread(new AiImgResult(tabAiSubscription,redisTemplate,queue)).start();
+            new Thread(new AiImgResult(aiModel,tabAiSubscription,redisTemplate,queue)).start();
         }
 
 

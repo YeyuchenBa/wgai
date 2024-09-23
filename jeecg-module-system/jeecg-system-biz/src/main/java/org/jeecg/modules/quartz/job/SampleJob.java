@@ -34,6 +34,7 @@ public class SampleJob implements Job {
 	ITabAiHistoryService iTabAiHistoryService;
 	@Override
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+
 		log.info("程序设备推送扫描任务："+jobExecutionContext.getJobDetail().getKey());
 		log.info(String.format(" 程序设备推送扫描任务:" + DateUtils.getTimestamp()));
 		List<TabAiSubscription> tabAiSubscription=iTabAiSubscriptionService.list();
