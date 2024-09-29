@@ -46,19 +46,21 @@ public class SampleJob implements Job {
 					if(!runstate){ //未运行		//调用运行
 						log.info("未运行		调用运行");
 						redisUtil.set(tab.getId(),true,60); //设置执行3600内
-						iTabAiHistoryService.startAiPush(tab);
+
 					}
+
 				}else{ //什么？ 我都没找到	//设置开启使用调用运行
 						log.info("我都没找到		调用运行");
 						redisUtil.set(tab.getId(),true,60); //设置执行3600内
-						iTabAiHistoryService.startAiPush(tab);
+
 				}
+				iTabAiHistoryService.startAiPush(tab);
 			}else{ //当前都为0了你执行个什么内容啊？
 				         log.info("停止运行");
 						redisUtil.set(tab.getId(),false,99999); //设置取消3600内
 			}
 		}
-		log.info(" 运行设备程序内容："+tabAiSubscription.size());
+	//	log.info(" 运行设备程序内容："+tabAiSubscription.size());
 
 	}
 }

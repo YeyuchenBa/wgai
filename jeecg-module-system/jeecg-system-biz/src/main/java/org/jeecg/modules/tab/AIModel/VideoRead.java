@@ -26,6 +26,7 @@ public class VideoRead implements Runnable {
     }
     @Override
     public void run() {
+
         VideoCapture capture = new VideoCapture(videoUrl);
         if (!capture.isOpened()) {
             System.out.println("Error: Could not open video stream.");

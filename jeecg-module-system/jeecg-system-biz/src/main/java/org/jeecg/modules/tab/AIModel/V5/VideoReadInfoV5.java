@@ -97,6 +97,7 @@ public class VideoReadInfoV5 implements Runnable{
                     int index = (int) output.size(0);
                     int rows = (int) output.size(1);
                     int cols = (int) output.size(2);
+                    //
                     // Dims: 3, Rows: 25200, Cols: 8 row,Mat [ 1*25200*8*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x28dce2da990, dataAddr=0x28dd0ebc640 ]index:1
                     System.out.println("Dims: " + dims + ", Rows: " + rows + ", Cols: " + cols+" row,"+output.row(0)+"index:"+index);
                     Mat detectionMat = output.reshape(1, output.size(1));
