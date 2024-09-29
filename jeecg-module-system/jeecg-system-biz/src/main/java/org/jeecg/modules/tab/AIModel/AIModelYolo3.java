@@ -705,7 +705,7 @@ public class AIModelYolo3 {
         log.info("图片地址{}",uploadpath+ File.separator +picUrl);
         Mat image = Imgcodecs.imread(uploadpath+ File.separator +picUrl);
         log.info("图片地址{}",image);
-
+// 2
         Mat blob = Dnn.blobFromImage(image, 1 / 255.0, new Size(640, 640), new Scalar(0), true, false);
         net.setInput(blob);
 
@@ -1348,12 +1348,13 @@ public class AIModelYolo3 {
     public  String SendVideoLocalhostYoloV3(String userId,String weight,String cfg,String names,String videoUrl,String uploadpath,WebSocket webSocket, RedisUtil redisUtil) throws Exception {
         Long a=System.currentTimeMillis();
 
-        // 加载类别名称
+        // 加载类别名称   人 1
         List<String> classNames = Files.readAllLines(Paths.get(uploadpath+ File.separator +names));
         // 加载YOLOv3模型
         log.info("cfg地址{}",uploadpath+ File.separator +cfg);
         log.info("weight地址{}",uploadpath+ File.separator +weight);
         Net net = Dnn.readNetFromDarknet(uploadpath+ File.separator +cfg, uploadpath+ File.separator +weight);
+       //    onnx  pt darknet
         net.setPreferableBackend(Dnn.DNN_BACKEND_OPENCV);
         net.setPreferableTarget(Dnn.DNN_TARGET_CPU);
 
@@ -1381,7 +1382,7 @@ public class AIModelYolo3 {
                 videoCapture.release();
                 break;
             }
-            // 将图像传递给模型进行目标检测
+            // 将图像传递给模型进行目标检测 1280*1080  720p
             Mat blob = Dnn.blobFromImage(frame, 1.0 / 255, new Size(416, 416), new Scalar(0), true, false);
             net.setInput(blob);
             // 将图像传递给模型进行目标检测
@@ -1390,7 +1391,7 @@ public class AIModelYolo3 {
             net.forward(result, outBlobNames);
 
             // 处理检测结果
-            float confThreshold = 0.5f;
+            float confThreshold = 0.5f; //80 70 60%   （1000*1000） 3-5天  50%
             List<Rect2d> boundingBoxes = new ArrayList<>();
             List<Float> confidences = new ArrayList<>();
             List<Integer> classIds = new ArrayList<>();
@@ -1405,7 +1406,7 @@ public class AIModelYolo3 {
                         //    log.info("classIdPoint"+ classIdPoint);
                         //    log.info("classIdPointx"+ classIdPoint.x);
                         classIds.add((int) classIdPoint.x); //记录标签下标
-                        double centerX = row.get(0, 0)[0] * frame.cols();
+                        double centerX = row.get(0, 0)[0] * frame.cols(); // xy
                         double centerY = row.get(0, 1)[0] * frame.rows();
                         double width = row.get(0, 2)[0] * frame.cols();
                         double height = row.get(0, 3)[0] * frame.rows();
@@ -1421,7 +1422,7 @@ public class AIModelYolo3 {
                 }
             }
 
-            // 执行非最大抑制，消除重复的边界框
+            // 执行非最大抑制，消除重复的边界框 第一高度
             MatOfRect2d boxes = new MatOfRect2d(boundingBoxes.toArray(new Rect2d[0]));
             MatOfFloat confidencesMat = new MatOfFloat();
             confidencesMat.fromList(confidences);
@@ -1432,7 +1433,7 @@ public class AIModelYolo3 {
                 continue;
             }
             int[]   indicesArray= indices.toArray();
-            // 获取保留的边界框
+         //   // 获取保留的边界框
 
             log.info(confidences.size()+"类别下标啊"+indicesArray.length);
             // 在图像上绘制保留的边界框

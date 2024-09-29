@@ -67,7 +67,7 @@ public class TabAiBaseController extends JeecgController<TabAiBase, ITabAiBaseSe
 	WebSocket webSocket;
 
 	// @GetMapping(value = "/test")
-	 public void test() {
+	 public void test() throws FFmpegFrameGrabber.Exception {
 		 System.load("F:\\JAVAAI\\opencv481\\opencv\\build\\java\\x64\\opencv_java481.dll");
 		 //   SendPicYoloV3("yolov3.weights","yolov3.cfg","coco.names","car.jpg","test","F:\\JAVAAI\\yolo3\\yuanshi");
 		 //     SendPicYoloV5("NBplate.onnx","coco.names","writecat.jpg","","F:\\JAVAAI\\yolov5");
@@ -81,6 +81,9 @@ public class TabAiBaseController extends JeecgController<TabAiBase, ITabAiBaseSe
 		 VideoWriter videoWriter = new VideoWriter();
 		 try {
 			 grabber.setOption("rtsp_transport", "tcp"); // 使用TCP而不是UDP
+			 grabber.setOption("probesize", "32");
+			 grabber.setOption("analyzeduration", "0");
+			 grabber.setOption("hwaccel", "cuda"); // 使用 CUDA 硬件加速
 			 grabber.start();
 			 System.out.println("连接到RTSP流成功");
 			 Java2DFrameConverter converter = new Java2DFrameConverter();
@@ -148,6 +151,8 @@ public class TabAiBaseController extends JeecgController<TabAiBase, ITabAiBaseSe
 			 //     canvasFrame.dispose();
 		 } catch (Exception e) {
 			 System.err.println("发生错误: " + e.getMessage());
+			 grabber.stop();
+			 grabber.release();
 			 e.printStackTrace();
 		 }
 	 }

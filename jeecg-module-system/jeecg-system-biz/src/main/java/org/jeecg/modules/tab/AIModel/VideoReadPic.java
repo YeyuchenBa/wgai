@@ -201,6 +201,7 @@ public class VideoReadPic implements Runnable{
                 return  false;
             }
             ob=RestUtil.post(pushInfo.getPushUrl(), (JSONObject) JSONObject.toJSON(push));
+            // mqtt
             log.info("消耗时间："+(b-a));
             log.info("返回内容："+ob);
             LastTime=b;

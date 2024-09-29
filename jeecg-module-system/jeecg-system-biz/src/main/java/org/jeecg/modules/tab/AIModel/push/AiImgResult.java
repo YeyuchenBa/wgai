@@ -51,6 +51,8 @@ public class AiImgResult implements Runnable {
     BlockingQueue<Mat> queue;
     List<TabAiModel> aiModel;
 
+    boolean flag=false;
+
     public AiImgResult(List<TabAiModel> aiModel,TabAiSubscription tabAiSubscription, RedisTemplate redisTemplate, BlockingQueue<Mat> queue){
         this.tabAiSubscription=tabAiSubscription;
         this.redisTemplate=redisTemplate;
@@ -59,37 +61,57 @@ public class AiImgResult implements Runnable {
     }
     @Override
     public void run() {
+        try {
 
-        while (true){
-            try {
-                boolean flag= (boolean) redisTemplate.opsForValue().get(tabAiSubscription.getId());
-                if(!flag){
-                    break;
-                }
-                Mat mat=queue.take();
-                for (TabAiModel tabaiModel: aiModel) {
-                    switch (tabaiModel.getSpareOne()) {
-                        case "1": //v3
-                        {
-                            String className=uploadpath+ File.separator +tabaiModel.getAiNameName();
-                            String cfgUrl=uploadpath+ File.separator +tabaiModel.getAiConfig();
-                            String weightUrl=uploadpath+ File.separator +tabaiModel.getAiWeights();
-                            v3(mat, className, cfgUrl, weightUrl,tabaiModel);
-                            break;
-                        }
-                        case "2":{
-                            String className=uploadpath+ File.separator +tabaiModel.getAiNameName();
-                            String weightUrl=uploadpath+ File.separator +tabaiModel.getAiWeights();
-                            V5V8V10(mat, className, weightUrl,tabaiModel);
-                            break;
+
+            while (true){
+                try {
+                    boolean flag= (boolean) redisTemplate.opsForValue().get(tabAiSubscription.getId());
+                    if(!flag){
+                        break;
+                    }
+
+
+                    Mat mat=queue.take();
+                    if(mat==null){
+                        break;
+                    }
+                    for (TabAiModel tabaiModel: aiModel) {
+                        switch (tabaiModel.getSpareOne()) {
+                            case "1": //v3
+                            {
+                                String className=uploadpath+ File.separator +tabaiModel.getAiNameName();
+                                String cfgUrl=uploadpath+ File.separator +tabaiModel.getAiConfig();
+                                String weightUrl=uploadpath+ File.separator +tabaiModel.getAiWeights();
+                                v3(mat, className, cfgUrl, weightUrl,tabaiModel);
+                                break;
+                            }
+                            case "2":{
+                                String className=uploadpath+ File.separator +tabaiModel.getAiNameName();
+                                String weightUrl=uploadpath+ File.separator +tabaiModel.getAiWeights();
+                                V5V8V10(mat, className, weightUrl,tabaiModel);
+                                break;
+                            }
                         }
                     }
+                    log.info("【开始自动识别】");
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-                log.info("开始自动识别");
 
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+
             }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }finally {
+            if(flag){
+                log.info("【识别成功增加间隔】");
+                redisTemplate.opsForValue().set(tabAiSubscription.getId()+"sj",true,Integer.valueOf(tabAiSubscription.getEventNumber()),TimeUnit.SECONDS);
+            }
+             System.gc();
+            log.info("【结束循环强制回收垃圾】");
+
         }
     }
 
@@ -156,7 +178,7 @@ public class AiImgResult implements Runnable {
         Dnn.NMSBoxes(boxes, confidencesMat, confThreshold, 0.4f, indices);
 
         if(indices.empty()){
-            log.warn("类别下标啊"+"未识别到内容");
+            log.warn(tabaiModel.getAiName()+"【V3未识别到内容】 直接识别咯");
             return;
         }
 
@@ -211,26 +233,14 @@ public class AiImgResult implements Runnable {
         push.setModelId(tabaiModel.getId());
         push.setIndexCode(tabAiSubscription.getIndexCode());
         push.setModelName(tabaiModel.getAiName());
-        JSONObject ob=null;
-        int jg= Integer.parseInt(tabAiSubscription.getEventNumber());
+
+
         try {
-            Long b=System.currentTimeMillis();
-            int endTime= (int) ((b-LastTime)/1000);
-            if(LastTime==0L){
-                log.info("当前时间未赋值："+endTime);
-                LastTime=b;
-            }else if(endTime>=jg){
-                LastTime=b;
-                log.info("当前时间频率赋值："+endTime);
-                ob= RestUtil.post(tabAiSubscription.getEventUrl(), (JSONObject) JSONObject.toJSON(push));
-            }else if(endTime<jg){
-                log.info("当前时间小于间隔："+endTime);
-
-            }
-
+            long b=System.currentTimeMillis();
+            JSONObject ob= RestUtil.post(tabAiSubscription.getEventUrl(), (JSONObject) JSONObject.toJSON(push));
             log.info("消耗时间："+(b-a));
             log.info("返回内容："+ob);
-            LastTime=b;
+            flag=true;
 
 
 
@@ -305,7 +315,7 @@ public class AiImgResult implements Runnable {
                         }
                     }
                     if(boxes2d.size()<=0){
-                        log.warn("未识别到内容");
+                        log.warn(tabaiModel.getAiName()+"【V5未识别到内容】 直接识别咯");
                         return;
                     }
                     // 执行非最大抑制，消除重复的边界框
@@ -375,38 +385,25 @@ public class AiImgResult implements Runnable {
             push.setModelId(tabaiModel.getId());
             push.setIndexCode(tabAiSubscription.getIndexCode());
             push.setModelName(tabaiModel.getAiName());
-            JSONObject ob=null;
-            int jg= Integer.parseInt(tabAiSubscription.getEventNumber());
+
+
             try {
                 Long b = System.currentTimeMillis();
-                int endTime = (int) ((b - LastTime) / 1000);
-                if (LastTime == 0L) {
-                    log.info("当前时间未赋值：" + endTime);
-                    LastTime = b;
-                } else if (endTime >= jg) {
-                    LastTime = b;
-                    log.info("当前时间频率赋值：" + endTime);
-                    ob = RestUtil.post(tabAiSubscription.getEventUrl(), (JSONObject) JSONObject.toJSON(push));
-                } else if (endTime < jg) {
-                    log.info("当前时间小于间隔：" + endTime);
-
-                }
-
+                JSONObject ob = RestUtil.post(tabAiSubscription.getEventUrl(), (JSONObject) JSONObject.toJSON(push));
                 log.info("消耗时间：" + (b - startTime));
                 log.info("返回内容：" + ob);
                 LastTime = b;
-
+                flag=true;
 
             }catch (Exception ex){
                 log.info("连接失败");
-
 
             }
 
         }catch (Exception ex){
             ex.printStackTrace();
         }finally {
-            System.out.println("失败了");
+            log.info("结束咯");
         }
     }
 
