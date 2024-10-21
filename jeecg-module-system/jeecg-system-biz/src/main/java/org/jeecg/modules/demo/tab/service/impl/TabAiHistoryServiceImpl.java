@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.k2fsa.sherpa.onnx.*;
 import lombok.extern.slf4j.Slf4j;
 import net.ailemon.asrt.sdk.BaseSpeechRecognizer;
 import net.ailemon.asrt.sdk.Sdk;
@@ -79,34 +80,79 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
     @Resource
     RedisTemplate redisTemplate;
 
+    String path="F:\\JAVAAI\\audio\\sherpa-onnx-conformer-zh-stateless2-2023-05-23\\";
+
     public String WGAIAudio="wgaiaudio";
 
     @Override
     public Result<?> aiAudio(String path,String uplpadPath) {
-        String host = "43.142.3.140";
-        String port = "20001";
-        String protocol = "http";
-        BaseSpeechRecognizer sr = Sdk.GetSpeechRecognizer(host, port, protocol);
-        String filename = uplpadPath+ File.separator+path;
-        if(path.indexOf(WGAIAudio)<=-1){
-            Result<String> result=waveInt16(filename,uplpadPath, System.currentTimeMillis()+"_"+WGAIAudio+".wav");
-            if(result.isSuccess()){
-                filename= uplpadPath+ File.separator+result.getMessage();
-                log.info("【转换16通道音频完成 删除原版文件重新保存】");
-                //删除本地文件
-            }else{
-                log.error("【转换16通道音频出现问题】");
-            }
+//        String host = "43.142.3.140";
+//        String port = "20001";
+//        String protocol = "http";
+//        BaseSpeechRecognizer sr = Sdk.GetSpeechRecognizer(host, port, protocol);
+//        String filename = uplpadPath+ File.separator+path;
+//        if(path.indexOf(WGAIAudio)<=-1){
+//            Result<String> result=waveInt16(filename,uplpadPath, System.currentTimeMillis()+"_"+WGAIAudio+".wav");
+//            if(result.isSuccess()){
+//                filename= uplpadPath+ File.separator+result.getMessage();
+//                log.info("【转换16通道音频完成 删除原版文件重新保存】");
+//                //删除本地文件
+//            }else{
+//                log.error("【转换16通道音频出现问题】");
+//            }
+//
+//        }
+//        //"D:\\opt\\upFiles\\temp\\audio_1722564524738.wav";
+//        // ============================================
+//        // 直接调用ASRT识别语音文件
+//        AsrtApiResponse rsp = sr.RecogniteFile(filename);
+//        System.out.println(rsp.statusCode);
+//        System.out.println(rsp.statusMessage);
+//        System.out.println(rsp.result);
+//return Result.OK(rsp.result);
+        String encoder =
+                path+"encoder-epoch-99-avg-1.int8.onnx";
+        String decoder =
+                path+"decoder-epoch-99-avg-1.onnx";
+        String joiner =
+                path+ "joiner-epoch-99-avg-1.onnx";
+        String tokens =  path+"tokens.txt";
 
-        }
-        //"D:\\opt\\upFiles\\temp\\audio_1722564524738.wav";
-        // ============================================
-        // 直接调用ASRT识别语音文件
-        AsrtApiResponse rsp = sr.RecogniteFile(filename);
-        System.out.println(rsp.statusCode);
-        System.out.println(rsp.statusMessage);
-        System.out.println(rsp.result);
-        return Result.OK(rsp.result);
+        String hotwords=path+"hotwords_cn.txt";
+
+        String waveFilename = uplpadPath+ File.separator+path;;
+        WaveReader reader = new WaveReader(waveFilename);
+        OfflineTransducerModelConfig transducer =
+                OfflineTransducerModelConfig.builder()
+                        .setEncoder(encoder)
+                        .setDecoder(decoder)
+                        .setJoiner(joiner)
+                        .build();
+        OfflineModelConfig modelConfig =
+                OfflineModelConfig.builder()
+                        .setTransducer(transducer)
+                        .setTokens(tokens)
+                        .setNumThreads(1)
+                        .setDebug(true)
+                        .setModelingUnit("cjkchar")
+                        .build();
+        // .build();
+        OfflineRecognizerConfig config =
+                OfflineRecognizerConfig.builder()
+                        .setOfflineModelConfig(modelConfig)
+                        .setDecodingMethod("modified_beam_search")
+                        .setHotwordsFile(hotwords)
+                        .setHotwordsScore(20.0f)
+                        .build();
+        OfflineRecognizer recognizer = new OfflineRecognizer(config);
+        OfflineStream stream = recognizer.createStream();
+        stream.acceptWaveform(reader.getSamples(), reader.getSampleRate());
+        recognizer.decode(stream);
+        String text = recognizer.getResult(stream).getText();
+        System.out.printf("filename:%s\nresult:%s\n", waveFilename, text);
+        stream.release();
+        recognizer.release();
+        return Result.OK(text);
     }
 
     public static void main(String[] args) {
