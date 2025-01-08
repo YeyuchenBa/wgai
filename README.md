@@ -22,6 +22,8 @@
 
 # 新功能截图和功能介绍配置
 ## 语音音识别为本地化部署 并增加热词配置 支持windwos/linux 国产化服务器部署
+![audio1](wg/audio1.png)
+![audio2](wg/audio2.png)
 ## 目前支持语音识别鉴于我没有https 额外增加了一个静态音频识别的内容
 ![yuyin](wg/yuyin.jpg)
 ![yuyinshibie](wg/yuyinshibie.jpg)
