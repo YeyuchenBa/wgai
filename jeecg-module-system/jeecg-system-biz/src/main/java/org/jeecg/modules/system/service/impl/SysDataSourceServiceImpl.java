@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 
 /**
  * @Description: 多数据源管理
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date: 2019-12-25
  * @Version: V1.0
  */

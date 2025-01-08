@@ -21,7 +21,7 @@ import java.util.Map;
 
 /**
  * @Description: ActuatorRedisController
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 @RestController

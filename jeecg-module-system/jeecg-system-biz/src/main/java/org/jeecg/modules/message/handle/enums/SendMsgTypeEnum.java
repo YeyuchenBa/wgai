@@ -4,7 +4,7 @@ import org.jeecg.common.util.oConvertUtils;
 
 /**
  * 发送消息类型枚举
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public enum SendMsgTypeEnum {
 

@@ -48,7 +48,7 @@ import lombok.extern.slf4j.Slf4j;
  /**
  * @Title: Controller
  * @Description: 用户代理人设置
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:  2019-04-17
  * @Version: V1.0
  */

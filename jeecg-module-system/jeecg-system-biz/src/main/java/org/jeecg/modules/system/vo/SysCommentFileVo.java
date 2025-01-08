@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * @Description: 文档VO
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date: 2022-07-21
  * @Version: V1.0
  */

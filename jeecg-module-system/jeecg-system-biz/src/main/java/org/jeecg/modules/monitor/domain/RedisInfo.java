@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * @Description: redis信息
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public class RedisInfo {
 

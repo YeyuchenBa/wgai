@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * @Description: 邮箱发送信息
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 @Component("emailSendMsgHandle")

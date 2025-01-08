@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * @Description: 系统数据日志Mapper接口
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public interface SysDataLogMapper extends BaseMapper<SysDataLog>{
 	/**

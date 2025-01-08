@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * @Description: VO 评论信息+文件信息
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date: 2022-07-19
  * @Version: V1.0
  */

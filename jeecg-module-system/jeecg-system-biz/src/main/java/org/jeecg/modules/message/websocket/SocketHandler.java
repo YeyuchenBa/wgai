@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 /**
  * 监听消息(通过redis发布订阅，推送消息)
  * 此方案：解决集群部署的问题，多实例节点（也就是发送消息端先发送消息到redis中，每个服务节点收到redis消息，再触发具体的ws推送）
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 @Component(WebSocket.REDIS_TOPIC_NAME)

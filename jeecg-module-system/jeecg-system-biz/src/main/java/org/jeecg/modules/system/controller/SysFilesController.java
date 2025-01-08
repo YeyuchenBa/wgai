@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 /**
  * @Description: 知识库-文档管理
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date: 2022-07-21
  * @Version: V1.0
  */

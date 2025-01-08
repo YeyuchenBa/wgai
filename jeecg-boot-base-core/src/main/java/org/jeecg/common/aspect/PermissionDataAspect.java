@@ -30,7 +30,7 @@ import java.util.List;
  *  当被请求的方法有注解PermissionData时,会在往当前request中写入数据权限信息
  * @Date 2019年4月10日
  * @Version: 1.0
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Aspect
 @Component

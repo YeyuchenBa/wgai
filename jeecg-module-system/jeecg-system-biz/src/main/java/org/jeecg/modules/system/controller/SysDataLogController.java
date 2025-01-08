@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Description: 系统数据日志
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @RestController
 @RequestMapping("/sys/dataLog")

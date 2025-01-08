@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @Description: OOS云存储service接口
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public interface IOssFileService extends IService<OssFile> {
 

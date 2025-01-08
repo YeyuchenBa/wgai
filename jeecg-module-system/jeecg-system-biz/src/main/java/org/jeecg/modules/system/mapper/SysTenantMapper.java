@@ -5,7 +5,7 @@ import org.jeecg.modules.system.entity.SysTenant;
 
 /**
  * @Description: 租户mapper接口
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public interface SysTenantMapper extends BaseMapper<SysTenant> {
 

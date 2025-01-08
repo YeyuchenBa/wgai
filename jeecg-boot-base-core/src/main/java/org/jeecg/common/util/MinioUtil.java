@@ -13,7 +13,7 @@ import java.net.URLDecoder;
 
 /**
  * minio文件上传工具类
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 public class MinioUtil {

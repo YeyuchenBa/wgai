@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
  * @Description: 问答回复
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-05-07
  * @Version: V1.0
  */

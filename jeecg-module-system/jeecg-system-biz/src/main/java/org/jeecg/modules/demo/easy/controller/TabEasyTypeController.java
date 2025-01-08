@@ -38,7 +38,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
  * @Description: 类别基础库
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-03-28
  * @Version: V1.0
  */
@@ -71,7 +71,7 @@ public class TabEasyTypeController extends JeecgController<TabEasyType, ITabEasy
 		IPage<TabEasyType> pageList = tabEasyTypeService.page(page, queryWrapper);
 		return Result.OK(pageList);
 	}
-	
+
 	/**
 	 *   添加
 	 *

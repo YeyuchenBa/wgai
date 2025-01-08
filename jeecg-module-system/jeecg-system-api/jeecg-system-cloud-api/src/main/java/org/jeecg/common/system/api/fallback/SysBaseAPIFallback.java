@@ -15,7 +15,7 @@ import java.util.Set;
 
 /**
  * 进入fallback的方法 检查是否token未设置
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 public class SysBaseAPIFallback implements ISysBaseAPI {

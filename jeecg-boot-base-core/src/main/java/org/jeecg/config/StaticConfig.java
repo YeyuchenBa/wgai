@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 设置静态参数初始化
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Component
 @Data

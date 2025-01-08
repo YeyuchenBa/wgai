@@ -56,7 +56,7 @@ import static org.jeecg.common.constant.CommonConstant.ANNOUNCEMENT_SEND_STATUS_
 /**
  * @Title: Controller
  * @Description: 系统通告表
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date: 2019-01-02
  * @Version: V1.0
  */

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * @Description: QueryCondition
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public class QueryCondition implements Serializable {
 

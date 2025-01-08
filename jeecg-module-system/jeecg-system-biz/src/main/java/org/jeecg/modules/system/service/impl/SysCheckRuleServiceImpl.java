@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 /**
  * @Description: 编码校验规则
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date: 2020-02-04
  * @Version: V1.0
  */

@@ -24,7 +24,7 @@ import java.util.Set;
  *  - 去掉了一些方法：addLog、getDatabaseType、queryAllDepart、queryAllUser(Wrapper wrapper)、queryAllUser(String[] userIds, int pageNo, int pageSize)
  *  - 修改了一些方法：createLog、sendSysAnnouncement（只保留了一个，其余全部干掉）
  * 2、@ConditionalOnMissingClass("org.jeecg.modules.system.service.impl.SysBaseApiImpl")=> 有实现类的时候，不实例化Feign接口
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Component
 @FeignClient(contextId = "sysBaseRemoteApi", value = ServiceNameConstants.SERVICE_SYSTEM, fallbackFactory = SysBaseAPIFallbackFactory.class)

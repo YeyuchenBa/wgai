@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Description: 消息
- * @author: jeecg-boot
+ * @Author: WGAI
  * @date: 2019-04-09
  * @version: V1.0
  */

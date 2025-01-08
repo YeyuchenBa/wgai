@@ -11,7 +11,7 @@ import java.util.Date;
 
 /**
  * 租户信息
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 @TableName("sys_tenant")

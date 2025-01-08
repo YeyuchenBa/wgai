@@ -34,6 +34,12 @@
 			<artifactId>easyAi</artifactId>
 			<version>1.1.7</version>
 		</dependency>
+		<!-- y语音识别 api -->
+		<dependency>
+			<groupId>sherpa.onnx.java</groupId>
+			<artifactId>k2fsa</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 		<!-- 企业微信/钉钉 api -->
 		<dependency>
 			<groupId>org.jeecgframework</groupId>

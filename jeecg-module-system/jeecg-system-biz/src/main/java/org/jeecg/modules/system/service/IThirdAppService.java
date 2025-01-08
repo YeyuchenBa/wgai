@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * 第三方App对接
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public interface IThirdAppService {
 

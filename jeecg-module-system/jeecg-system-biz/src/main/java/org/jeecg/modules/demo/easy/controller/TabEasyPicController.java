@@ -20,7 +20,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
-import org.jeecg.modules.system.entity.SysUser;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -39,8 +38,8 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
  * @Description: 训练图片
- * @Author: jeecg-boot
- * @Date:   2024-03-28
+ * @Author: WGAI
+ * @Date:   2024-12-17
  * @Version: V1.0
  */
 @Api(tags="训练图片")
@@ -70,8 +69,6 @@ public class TabEasyPicController extends JeecgController<TabEasyPic, ITabEasyPi
 		QueryWrapper<TabEasyPic> queryWrapper = QueryGenerator.initQueryWrapper(tabEasyPic, req.getParameterMap());
 		Page<TabEasyPic> page = new Page<TabEasyPic>(pageNo, pageSize);
 		IPage<TabEasyPic> pageList = tabEasyPicService.page(page, queryWrapper);
-
-
 		return Result.OK(pageList);
 	}
 	

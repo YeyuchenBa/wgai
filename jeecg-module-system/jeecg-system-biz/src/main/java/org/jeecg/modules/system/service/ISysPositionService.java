@@ -5,7 +5,7 @@ import org.jeecg.modules.system.entity.SysPosition;
 
 /**
  * @Description: 职务表
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date: 2019-09-19
  * @Version: V1.0
  */

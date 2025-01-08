@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * 模板消息
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 public class TemplateMessageDTO extends TemplateDTO implements Serializable {

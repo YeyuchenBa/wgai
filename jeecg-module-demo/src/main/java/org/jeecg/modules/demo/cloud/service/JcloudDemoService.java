@@ -4,7 +4,7 @@ import org.jeecg.common.api.vo.Result;
 
 /**
  * @Description: JcloudDemoService接口
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public interface JcloudDemoService {
 

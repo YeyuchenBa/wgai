@@ -18,7 +18,7 @@ import org.apache.http.impl.client.HttpClients;
 
 /**
  * @Description: CasServiceUtil
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public class CasServiceUtil {
 	

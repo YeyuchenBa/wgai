@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 
 /**
  * @Description: 通用工具
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 public class CommonUtils {

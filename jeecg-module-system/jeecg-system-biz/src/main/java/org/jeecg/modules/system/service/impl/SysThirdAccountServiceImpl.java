@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * @Description: 第三方登录账号表
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2020-11-17
  * @Version: V1.0
  */

@@ -10,7 +10,7 @@ import lombok.Data;
 
 /**
  * @Description: 用户部门
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 @TableName("sys_user_depart")

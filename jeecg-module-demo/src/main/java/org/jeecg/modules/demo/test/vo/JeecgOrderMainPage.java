@@ -11,7 +11,7 @@ import lombok.Data;
 
 /**
  * @Description: 一对多示例
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 public class JeecgOrderMainPage {

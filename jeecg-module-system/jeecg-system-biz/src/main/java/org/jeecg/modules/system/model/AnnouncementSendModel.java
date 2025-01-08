@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 /**
  * @Description: 用户通告阅读标记表
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:  2019-02-21
  * @Version: V1.0
  */

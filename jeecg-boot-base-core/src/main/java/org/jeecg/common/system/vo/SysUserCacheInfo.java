@@ -6,7 +6,7 @@ import org.jeecg.common.util.DateUtils;
 
 /**
  * @Description: 用户缓存信息
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public class SysUserCacheInfo {
 	

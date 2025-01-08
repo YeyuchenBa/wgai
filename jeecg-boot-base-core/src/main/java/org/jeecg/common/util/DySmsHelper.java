@@ -23,7 +23,7 @@ import com.aliyuncs.profile.IClientProfile;
  *
  * 备注:Demo工程编码采用UTF-8
  * 国际短信发送请勿参照此DEMO
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public class DySmsHelper {
 	

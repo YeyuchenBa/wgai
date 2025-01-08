@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 
 /**
  * @Description: 字典类
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

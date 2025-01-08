@@ -16,6 +16,10 @@ import org.bytedeco.javacv.*;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
+import org.jeecg.modules.demo.audio.entity.TabAuditSetting;
+import org.jeecg.modules.demo.audio.entity.TabKeyWords;
+import org.jeecg.modules.demo.audio.mapper.TabKeyWordsMapper;
+import org.jeecg.modules.demo.audio.service.ITabKeyWordsService;
 import org.jeecg.modules.demo.tab.entity.TabAiBase;
 import org.jeecg.modules.demo.tab.entity.TabAiHistory;
 import org.jeecg.modules.demo.tab.entity.TabAiModelBund;
@@ -37,6 +41,7 @@ import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +62,7 @@ import static org.jeecg.modules.tab.AIModel.AIModelYolo3.converterToFrame;
 
 /**
  * @Description: AI识别结果历史
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-03-13
  * @Version: V1.0
  */
@@ -72,6 +77,9 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
     @Autowired
     TabAiHistoryMapper tabAiHistoryMapper;
 
+    @Autowired
+    ITabKeyWordsService iTabKeyWordsService;
+
     @Resource
     WebSocket webSocket;
     @Resource
@@ -79,10 +87,67 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
 
     @Resource
     RedisTemplate redisTemplate;
-
-    String path="F:\\JAVAAI\\audio\\sherpa-onnx-conformer-zh-stateless2-2023-05-23\\";
+    @Value(value = "${audioPath}")
+    String pathStatic;//="F:\\JAVAAI\\audio\\sherpa-onnx-conformer-zh-stateless2-2023-05-23\\";
 
     public String WGAIAudio="wgaiaudio";
+
+    @Override
+    public Result<?> aiAudioSetting(TabAuditSetting tabAuditSetting,String audioPath, String uplopadPath) {
+        try {
+            String waveFilename = uplopadPath + File.separator + audioPath;
+            Result<String> result = waveInt16(waveFilename, uplopadPath, System.currentTimeMillis() + "_" + WGAIAudio + ".wav");
+            if (result.isSuccess()) {
+                waveFilename = uplopadPath + File.separator + result.getMessage();
+                log.info("【转换16通道音频完成 删除原版文件重新保存】");
+            } else {
+                log.error("【转换16通道音频出现问题】");
+            }
+            WaveReader reader = new WaveReader(waveFilename);
+            log.info("【waveFilename:{}】",waveFilename);
+            log.info("【getEncoder:{}】",uplopadPath + File.separator + tabAuditSetting.getEncoderPath());
+            log.info("【getDecoderPath:{}】",uplopadPath + File.separator + tabAuditSetting.getDecoderPath());
+            log.info("【getJoinerPath:{}】",uplopadPath + File.separator + tabAuditSetting.getJoinerPath());
+            log.info("【getTokenPath:{}】",uplopadPath + File.separator + tabAuditSetting.getTokenPath());
+            log.info("【getModeLing:{}】",tabAuditSetting.getModeLing());
+            log.info("【getHotWord:{}】",uplopadPath + File.separator + tabAuditSetting.getHotWord());
+            log.info("【getDecodingMethod:{}】",tabAuditSetting.getDecodingMethod());
+            OfflineTransducerModelConfig transducer =
+                    OfflineTransducerModelConfig.builder()
+                            .setEncoder(uplopadPath + File.separator + tabAuditSetting.getEncoderPath())
+                            .setDecoder(uplopadPath + File.separator + tabAuditSetting.getDecoderPath())
+                            .setJoiner(uplopadPath + File.separator + tabAuditSetting.getJoinerPath())
+                            .build();
+            OfflineModelConfig modelConfig =
+                    OfflineModelConfig.builder()
+                            .setTransducer(transducer)
+                            .setTokens(uplopadPath + File.separator + tabAuditSetting.getTokenPath())
+                            .setNumThreads(1)
+                            .setDebug(true)
+                            .setModelingUnit(tabAuditSetting.getModeLing())
+                            .build();
+            // .build();
+            OfflineRecognizerConfig config =
+                    OfflineRecognizerConfig.builder()
+                            .setOfflineModelConfig(modelConfig)
+                            .setDecodingMethod(tabAuditSetting.getDecodingMethod())
+                            .setHotwordsFile(uplopadPath + File.separator + tabAuditSetting.getHotWord())
+                            .setHotwordsScore(20.0f)
+                            .build();
+            OfflineRecognizer recognizer = new OfflineRecognizer(config);
+            OfflineStream stream = recognizer.createStream();
+            stream.acceptWaveform(reader.getSamples(), reader.getSampleRate());
+            recognizer.decode(stream);
+            String text = recognizer.getResult(stream).getText();
+            System.out.printf("filename:%s\nresult:%s\n", waveFilename, text);
+            stream.release();
+            recognizer.release();
+            return Result.OK(changeInfo(text));
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return Result.error("识别失败");
+    }
 
     @Override
     public Result<?> aiAudio(String path,String uplpadPath) {
@@ -111,16 +176,23 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
 //        System.out.println(rsp.result);
 //return Result.OK(rsp.result);
         String encoder =
-                path+"encoder-epoch-99-avg-1.int8.onnx";
+                pathStatic+"encoder-epoch-99-avg-1.int8.onnx";
         String decoder =
-                path+"decoder-epoch-99-avg-1.onnx";
+                pathStatic+"decoder-epoch-99-avg-1.onnx";
         String joiner =
-                path+ "joiner-epoch-99-avg-1.onnx";
-        String tokens =  path+"tokens.txt";
+                pathStatic+ "joiner-epoch-99-avg-1.onnx";
+        String tokens =  pathStatic+"tokens.txt";
 
-        String hotwords=path+"hotwords_cn.txt";
+        String hotwords=pathStatic+"hotwords_cn.txt";
 
         String waveFilename = uplpadPath+ File.separator+path;;
+        Result<String> result=waveInt16(waveFilename,uplpadPath, System.currentTimeMillis()+"_"+WGAIAudio+".wav");
+        if(result.isSuccess()){
+            waveFilename= uplpadPath+ File.separator+result.getMessage();
+            log.info("【转换16通道音频完成 删除原版文件重新保存】");
+        }else{
+            log.error("【转换16通道音频出现问题】");
+        }
         WaveReader reader = new WaveReader(waveFilename);
         OfflineTransducerModelConfig transducer =
                 OfflineTransducerModelConfig.builder()
@@ -152,9 +224,21 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
         System.out.printf("filename:%s\nresult:%s\n", waveFilename, text);
         stream.release();
         recognizer.release();
-        return Result.OK(text);
+        return Result.OK(changeInfo(text));
     }
 
+
+    public  String  changeInfo(String text){
+
+        if(text!=null){
+            List<TabKeyWords> tabKeyWords=(List<TabKeyWords>) redisTemplate.opsForValue().get("KeyWord");
+            for (TabKeyWords keyword:tabKeyWords) {
+                text=  text.replaceAll(keyword.getKeyName(),keyword.getHotName());
+            }
+          return text;
+        }
+        return "";
+    }
     public static void main(String[] args) {
         // TODO Auto-generated method stub
         String path="wgaiaudio";

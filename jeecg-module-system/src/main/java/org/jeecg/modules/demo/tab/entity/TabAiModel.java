@@ -20,7 +20,7 @@ import lombok.experimental.Accessors;
 
 /**
  * @Description: AI模型
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-03-13
  * @Version: V1.0
  */

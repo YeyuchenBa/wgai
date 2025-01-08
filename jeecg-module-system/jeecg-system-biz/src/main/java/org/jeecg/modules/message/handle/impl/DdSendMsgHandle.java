@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @Description: 发钉钉消息模板
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 @Component("ddSendMsgHandle")

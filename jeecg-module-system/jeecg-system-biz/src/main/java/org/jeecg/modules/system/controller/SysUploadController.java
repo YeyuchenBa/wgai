@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * minio文件上传示例
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 @RestController

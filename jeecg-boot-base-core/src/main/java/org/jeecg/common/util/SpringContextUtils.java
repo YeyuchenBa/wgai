@@ -13,7 +13,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * @Description: spring上下文工具类
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Component
 public class SpringContextUtils implements ApplicationContextAware {

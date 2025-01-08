@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * @Description: 文档管理
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

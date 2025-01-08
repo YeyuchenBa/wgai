@@ -16,6 +16,8 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.demo.audio.entity.TabAuditSetting;
+import org.jeecg.modules.demo.audio.service.ITabAuditSettingService;
 import org.jeecg.modules.demo.tab.entity.TabAiHistory;
 import org.jeecg.modules.demo.tab.entity.TabAiModelBund;
 import org.jeecg.modules.demo.tab.service.ITabAiHistoryService;
@@ -48,7 +50,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
  * @Description: AI识别结果历史
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-03-13
  * @Version: V1.0
  */
@@ -118,7 +120,8 @@ public class TabAiHistoryController extends JeecgController<TabAiHistory, ITabAi
 		 return tabAiHistoryService.startAi(tabAiModelBund,uploadpath,sysUser.getId());
 	 }
 
-
+	 @Autowired
+	 private ITabAuditSettingService tabAuditSettingService;
 	 /**
 	  *   添加识别结果
 	  *
@@ -131,7 +134,15 @@ public class TabAiHistoryController extends JeecgController<TabAiHistory, ITabAi
 	 @GetMapping(value = "/addAudio")
 	 public Result<?> addAudio(@RequestParam(name="path",required=true) String path) {
 //		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 return tabAiHistoryService.aiAudio(path,uploadpath);
+		 QueryWrapper<TabAuditSetting> tabAuditSettingQueryWrapper=new QueryWrapper<>();
+		 tabAuditSettingQueryWrapper.eq("is_start",1); //当前使用中的
+		 List<TabAuditSetting> TabAuditSettingList=tabAuditSettingService.list(tabAuditSettingQueryWrapper);
+		 if(TabAuditSettingList.size()>0){
+			 return tabAiHistoryService.aiAudioSetting(TabAuditSettingList.get(0), path,uploadpath);
+		 }else{
+			 return tabAiHistoryService.aiAudio(path,uploadpath);
+		 }
+
 	 }
 	 /**
 	  *   结束识别结果

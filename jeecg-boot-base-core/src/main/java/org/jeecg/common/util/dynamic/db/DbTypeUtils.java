@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * 数据库类型判断
  * 【有些数据库引擎是一样的，以达到复用目的】
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public class DbTypeUtils {
 

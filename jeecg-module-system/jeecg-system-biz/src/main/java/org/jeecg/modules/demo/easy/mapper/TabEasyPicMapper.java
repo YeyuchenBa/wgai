@@ -8,8 +8,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * @Description: 训练图片
- * @Author: jeecg-boot
- * @Date:   2024-03-28
+ * @Author: WGAI
+ * @Date:   2024-12-17
  * @Version: V1.0
  */
 public interface TabEasyPicMapper extends BaseMapper<TabEasyPic> {

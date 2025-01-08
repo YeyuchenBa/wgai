@@ -26,7 +26,7 @@ import java.util.*;
 
 /**
  * @Description: DlMockController
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 @RestController

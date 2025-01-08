@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 解析cas,ST验证后的xml
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 public final class XmlUtils {

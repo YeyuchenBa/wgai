@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * 字典查询参数实体
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 public class DictQuery {

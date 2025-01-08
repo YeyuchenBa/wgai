@@ -23,7 +23,7 @@ import java.util.*;
 
 /**
  * 租户配置信息
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 @RestController

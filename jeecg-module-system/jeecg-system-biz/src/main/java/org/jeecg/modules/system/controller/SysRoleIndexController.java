@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiOperation;
 
 /**
  * @Description: 角色首页配置
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date: 2022-03-25
  * @Version: V1.0
  */

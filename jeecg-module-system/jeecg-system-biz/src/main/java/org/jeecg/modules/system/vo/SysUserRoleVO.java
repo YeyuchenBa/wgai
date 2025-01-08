@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * @Description: 用户角色vo
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 public class SysUserRoleVO implements Serializable{

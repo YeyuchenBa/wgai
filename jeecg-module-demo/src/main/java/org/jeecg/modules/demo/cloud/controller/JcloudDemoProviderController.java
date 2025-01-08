@@ -13,7 +13,7 @@ import javax.annotation.Resource;
 /**
  * 服务端提供方——feign接口
  * 【提供给system-start调用测试，看feign是否畅通】
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 @RestController

@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * @Description: 数据日志service接口
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public interface ISysDataLogService extends IService<SysDataLog> {
 	

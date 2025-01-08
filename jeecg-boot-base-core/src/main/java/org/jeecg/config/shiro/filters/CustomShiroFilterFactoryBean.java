@@ -17,7 +17,7 @@ import java.util.Map;
 
 /**
  * 自定义ShiroFilterFactoryBean解决资源中文路径问题
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 public class CustomShiroFilterFactoryBean extends ShiroFilterFactoryBean {

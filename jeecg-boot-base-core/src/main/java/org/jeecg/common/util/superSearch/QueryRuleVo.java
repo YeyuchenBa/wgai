@@ -4,7 +4,7 @@
 //
 ///**
 // * @Description: QueryRuleVo
-// * @author: jeecg-boot
+// * @Author: WGAI
 // */
 //@Data
 //public class QueryRuleVo {

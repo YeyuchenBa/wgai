@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * @Description: PmsUtil
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 @Component

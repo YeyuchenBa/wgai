@@ -4,6 +4,7 @@ import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.demo.audio.entity.TabAuditSetting;
 import org.jeecg.modules.demo.tab.entity.TabAiHistory;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.demo.tab.entity.TabAiModelBund;
@@ -12,7 +13,7 @@ import org.jeecg.modules.tab.entity.TabAiModel;
 
 /**
  * @Description: AI识别结果历史
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-03-13
  * @Version: V1.0
  */
@@ -25,6 +26,8 @@ public interface ITabAiHistoryService extends IService<TabAiHistory> {
      * @param path 文件地址
      * @return
      */
+    public Result<?> aiAudioSetting(TabAuditSetting tabAuditSetting,String audioPath, String uplopadPath);
+
     public Result<?> aiAudio(String path,String uplopadPath);
 
     /**

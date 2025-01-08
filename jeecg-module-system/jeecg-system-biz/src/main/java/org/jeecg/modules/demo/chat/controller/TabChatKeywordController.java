@@ -38,7 +38,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
  * @Description: 关键词模板
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-04-18
  * @Version: V1.0
  */

@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Description: 消息模板
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Sate: 2019-04-09
  * @Version: V1.0
  */

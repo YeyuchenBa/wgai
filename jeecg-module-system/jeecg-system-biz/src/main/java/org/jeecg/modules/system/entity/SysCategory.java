@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 /**
  * @Description: 分类字典
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2019-05-29
  * @Version: V1.0
  */

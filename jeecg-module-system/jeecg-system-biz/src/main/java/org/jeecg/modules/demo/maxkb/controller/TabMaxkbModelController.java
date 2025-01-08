@@ -41,7 +41,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
  * @Description: 语言模型列表
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-05-30
  * @Version: V1.0
  */

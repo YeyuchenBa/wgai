@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * @Description: AI识别结果历史
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-03-13
  * @Version: V1.0
  */

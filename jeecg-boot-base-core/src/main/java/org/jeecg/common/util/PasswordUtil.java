@@ -10,7 +10,7 @@ import javax.crypto.spec.PBEParameterSpec;
 
 /**
  * @Description: 密码工具类
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public class PasswordUtil {
 

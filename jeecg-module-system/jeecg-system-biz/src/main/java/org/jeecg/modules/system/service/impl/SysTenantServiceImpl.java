@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @Description: 租户实现类
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Service("sysTenantServiceImpl")
 @Slf4j

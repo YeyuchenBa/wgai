@@ -10,7 +10,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * @Description: 用户部门mapper接口
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public interface SysUserDepartMapper extends BaseMapper<SysUserDepart>{
 

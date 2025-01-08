@@ -38,7 +38,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
  * @Description: 图片任务关联表
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-03-28
  * @Version: V1.0
  */

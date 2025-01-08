@@ -46,7 +46,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
  * @Description: 语义分类
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-04-17
  * @Version: V1.0
  */

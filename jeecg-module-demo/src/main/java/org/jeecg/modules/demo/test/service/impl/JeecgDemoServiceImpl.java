@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * @Description: jeecg 测试demo
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:  2018-12-29
  * @Version: V1.0
  */

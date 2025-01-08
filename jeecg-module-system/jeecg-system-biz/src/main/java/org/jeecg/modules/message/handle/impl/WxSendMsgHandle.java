@@ -5,7 +5,7 @@ import org.jeecg.modules.message.handle.ISendMsgHandle;
 
 /**
  * @Description: 发微信消息模板
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 public class WxSendMsgHandle implements ISendMsgHandle {

@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * 模拟实体
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 public class MockEntity {

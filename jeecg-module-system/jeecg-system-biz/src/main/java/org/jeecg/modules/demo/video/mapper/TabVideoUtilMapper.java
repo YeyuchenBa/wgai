@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * @Description: 区域入侵配置
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-08-06
  * @Version: V1.0
  */

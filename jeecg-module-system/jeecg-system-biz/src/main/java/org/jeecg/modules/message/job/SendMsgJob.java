@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * 发送消息任务
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 
 @Slf4j

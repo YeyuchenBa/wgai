@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 
 /**
  * 签名 拦截器配置
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Configuration
 public class SignAuthConfiguration implements WebMvcConfigurer {

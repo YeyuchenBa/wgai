@@ -33,7 +33,7 @@ import io.swagger.annotations.ApiOperation;
 
  /**
  * @Description: 部门角色
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2020-02-12
  * @Version: V1.0
  */

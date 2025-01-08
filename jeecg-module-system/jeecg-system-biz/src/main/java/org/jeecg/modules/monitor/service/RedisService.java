@@ -10,7 +10,7 @@ import org.jeecg.modules.monitor.exception.RedisConnectException;
 
 /**
  * @Description: redis信息service接口
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public interface RedisService {
 

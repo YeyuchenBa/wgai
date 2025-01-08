@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 云存储示例 DEMO
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 @Controller

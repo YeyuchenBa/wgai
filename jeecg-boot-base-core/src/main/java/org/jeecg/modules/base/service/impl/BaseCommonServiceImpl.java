@@ -18,7 +18,7 @@ import java.util.*;
 
 /**
  * @Description: common实现类
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Service
 @Slf4j

@@ -8,7 +8,7 @@ import java.util.List;
  * 首页自定义
  * 通过角色编码与首页组件路径配置
  * 枚举的顺序有权限高低权重作用（也就是配置多个角色，在前面的角色首页，会优先生效）
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public enum RoleIndexConfigEnum {
 

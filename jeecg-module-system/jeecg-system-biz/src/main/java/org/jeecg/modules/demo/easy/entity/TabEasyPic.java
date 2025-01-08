@@ -20,8 +20,8 @@ import lombok.experimental.Accessors;
 
 /**
  * @Description: 训练图片
- * @Author: jeecg-boot
- * @Date:   2024-03-28
+ * @Author: WGAI
+ * @Date:   2024-12-17
  * @Version: V1.0
  */
 @Data
@@ -33,7 +33,7 @@ public class TabEasyPic implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/**主键*/
-	@TableId(type = IdType.ASSIGN_ID)
+	//@TableId(type = IdType.ASSIGN_ID)
     @ApiModelProperty(value = "主键")
     private java.lang.String id;
 	/**创建人*/
@@ -72,4 +72,16 @@ public class TabEasyPic implements Serializable {
 	@Excel(name = "备注", width = 15)
     @ApiModelProperty(value = "备注")
     private java.lang.String remake;
+	/**是否标注*/
+	@Excel(name = "是否标注", width = 15)
+    @ApiModelProperty(value = "是否标注")
+    private java.lang.String markType;
+	/**标注文件*/
+	@Excel(name = "标注文件", width = 15)
+    @ApiModelProperty(value = "标注文件")
+    private java.lang.String markXml;
+	/**标注标签*/
+	@Excel(name = "标注标签", width = 15)
+    @ApiModelProperty(value = "标注标签")
+    private java.lang.String markTitle;
 }

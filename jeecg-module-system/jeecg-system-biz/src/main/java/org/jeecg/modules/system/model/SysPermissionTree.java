@@ -8,7 +8,7 @@ import org.jeecg.modules.system.entity.SysPermission;
 
 /**
  * @Description: 菜单树，封装树结构
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public class SysPermissionTree implements Serializable {
 

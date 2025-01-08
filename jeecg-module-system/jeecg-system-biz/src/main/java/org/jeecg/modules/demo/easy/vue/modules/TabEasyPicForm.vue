@@ -23,6 +23,21 @@
               <a-input v-model="model.remake" placeholder="请输入备注"  ></a-input>
             </a-form-model-item>
           </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="是否标注" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="markType">
+              <a-input v-model="model.markType" placeholder="请输入是否标注"  ></a-input>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="标注文件" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="markXml">
+              <a-input v-model="model.markXml" placeholder="请输入标注文件"  ></a-input>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="标注标签" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="markTitle">
+              <a-input v-model="model.markTitle" placeholder="请输入标注标签"  ></a-input>
+            </a-form-model-item>
+          </a-col>
         </a-row>
       </a-form-model>
     </j-form-container>

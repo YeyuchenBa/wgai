@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @Description: 定时任务在线管理
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date: 2019-04-28
  * @Version: V1.1
  */

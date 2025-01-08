@@ -20,7 +20,7 @@ import lombok.experimental.Accessors;
 
 /**
  * @Description: 聊天历史记录
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-03-28
  * @Version: V1.0
  */

@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Description: 查询生成器
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 public class QueryGenerator {

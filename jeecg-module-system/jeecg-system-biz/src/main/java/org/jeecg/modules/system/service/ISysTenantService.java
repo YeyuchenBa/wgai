@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * @Description: 租户service接口
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public interface ISysTenantService extends IService<SysTenant> {
 

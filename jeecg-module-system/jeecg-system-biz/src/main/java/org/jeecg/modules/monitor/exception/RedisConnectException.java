@@ -2,7 +2,7 @@ package org.jeecg.modules.monitor.exception;
 
 /**
  * Redis 连接异常
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public class RedisConnectException extends Exception {
 

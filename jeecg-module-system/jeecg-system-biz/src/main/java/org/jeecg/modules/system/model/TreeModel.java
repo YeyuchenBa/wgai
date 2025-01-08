@@ -10,7 +10,7 @@ import org.jeecg.modules.system.entity.SysPermission;
 
 /**
   * 树形列表用到
-  * @author: jeecg-boot
+  * @Author: WGAI
  */
 public class TreeModel implements Serializable {
 	

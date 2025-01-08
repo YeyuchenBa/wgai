@@ -2,7 +2,7 @@ package org.jeecg.common.constant;
 
 /**
  * VXESocket 常量
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public class VxeSocketConst {
 

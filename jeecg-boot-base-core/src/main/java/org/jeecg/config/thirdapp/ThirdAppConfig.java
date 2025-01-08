@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * 第三方App对接配置
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Configuration
 public class ThirdAppConfig {

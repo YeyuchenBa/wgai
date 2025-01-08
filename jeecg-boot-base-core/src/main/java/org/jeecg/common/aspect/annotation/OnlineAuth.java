@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * online请求拦截专用注解
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD})

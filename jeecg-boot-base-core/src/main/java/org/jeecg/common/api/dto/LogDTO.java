@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * 日志对象
  * cloud api 用到的接口传输对象
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 public class LogDTO implements Serializable {

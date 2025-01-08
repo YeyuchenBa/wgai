@@ -15,7 +15,7 @@ import java.security.KeyPair;
 
 /**
  * @Description: SecurityTools
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public class SecurityTools {
     public static final String ALGORITHM = "AES/ECB/PKCS5Padding";

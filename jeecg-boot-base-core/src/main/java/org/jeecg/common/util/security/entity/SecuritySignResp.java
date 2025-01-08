@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * @Description: SecuritySignResp
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 public class SecuritySignResp {

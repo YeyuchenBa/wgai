@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * @Description: NgAlainServiceImpl 实现类
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Service("ngAlainService")
 public class NgAlainServiceImpl implements NgAlainService {

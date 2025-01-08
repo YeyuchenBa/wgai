@@ -21,7 +21,7 @@ import java.util.Set;
 
 /**
  * 服务化 system模块 对外接口请求类
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 @RestController

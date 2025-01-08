@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 
 /**
  * 第三方App对接：企业微信实现类
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 @Service

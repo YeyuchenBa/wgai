@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * 普通消息
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 public class MessageDTO implements Serializable {

@@ -3,7 +3,7 @@ package org.jeecg.common.constant.enums;
 /**
  * LowApp 切面注解枚举
  * @date 2022-1-5
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public enum LowAppAopEnum {
 

@@ -26,7 +26,7 @@ import java.util.*;
 
 /**
  * @Description: VxeMockController
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @RestController
 @RequestMapping("/mock/vxe")

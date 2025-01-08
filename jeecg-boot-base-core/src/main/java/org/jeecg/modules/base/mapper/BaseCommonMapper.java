@@ -6,7 +6,7 @@ import org.jeecg.common.api.dto.LogDTO;
 
 /**
  * @Description: BaseCommonMapper
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public interface BaseCommonMapper {
 

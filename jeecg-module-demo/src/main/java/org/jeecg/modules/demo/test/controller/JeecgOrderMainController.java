@@ -51,7 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Description: 一对多示例（JEditableTable行编辑）
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:2019-02-15
  * @Version: V2.0
  */

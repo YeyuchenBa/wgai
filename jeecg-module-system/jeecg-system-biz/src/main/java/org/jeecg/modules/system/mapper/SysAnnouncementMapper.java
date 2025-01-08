@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 /**
  * @Description: 系统通告表
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:  2019-01-02
  * @Version: V1.0
  */

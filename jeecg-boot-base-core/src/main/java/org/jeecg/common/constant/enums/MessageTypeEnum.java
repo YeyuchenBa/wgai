@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * 消息类型
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @EnumDict("messageType")
 public enum MessageTypeEnum {

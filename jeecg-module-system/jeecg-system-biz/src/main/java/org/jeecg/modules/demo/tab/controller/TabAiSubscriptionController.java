@@ -51,7 +51,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
  * @Description: Ai事件订阅
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2024-04-08
  * @Version: V1.0
  */

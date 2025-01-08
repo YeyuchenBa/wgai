@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  * 带业务参数的模板消息
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 public class BusTemplateMessageDTO extends TemplateMessageDTO implements Serializable {

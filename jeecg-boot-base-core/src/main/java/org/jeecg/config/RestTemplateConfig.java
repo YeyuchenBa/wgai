@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 
 /**
 * 优雅的http请求方式RestTemplate
-* @author: jeecg-boot
+* @Author: WGAI
 * @Return:
 */
 @Configuration

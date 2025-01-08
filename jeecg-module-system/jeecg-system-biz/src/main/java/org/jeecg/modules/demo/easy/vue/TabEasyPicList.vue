@@ -171,6 +171,21 @@
             dataIndex: 'remake'
           },
           {
+            title:'是否标注',
+            align:"center",
+            dataIndex: 'markType'
+          },
+          {
+            title:'标注文件',
+            align:"center",
+            dataIndex: 'markXml'
+          },
+          {
+            title:'标注标签',
+            align:"center",
+            dataIndex: 'markTitle'
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",
@@ -208,6 +223,9 @@
         fieldList.push({type:'string',value:'picName',text:'图片名称',dictCode:''})
         fieldList.push({type:'string',value:'picUrl',text:'图片地址',dictCode:''})
         fieldList.push({type:'string',value:'remake',text:'备注',dictCode:''})
+        fieldList.push({type:'string',value:'markType',text:'是否标注',dictCode:''})
+        fieldList.push({type:'string',value:'markXml',text:'标注文件',dictCode:''})
+        fieldList.push({type:'string',value:'markTitle',text:'标注标签',dictCode:''})
         this.superFieldList = fieldList
       }
     }

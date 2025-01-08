@@ -4,3 +4,4 @@ spring:
   profiles:
     active: '@profile.name@'
 opencv: 'F:\JAVAAI\opencv481\opencv\build\java\x64\opencv_java481.dll'
+audioPath: 'F:\JAVAAI\audio\sherpa-onnx-conformer-zh-stateless2-2023-05-23\'

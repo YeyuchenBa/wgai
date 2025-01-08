@@ -8,7 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 /**
  * @Description: AES 加密
- * @author: jeecg-boot
+ * @Author: WGAI
  * @date: 2022/3/30 11:48
  */
 public class AesEncryptUtil {

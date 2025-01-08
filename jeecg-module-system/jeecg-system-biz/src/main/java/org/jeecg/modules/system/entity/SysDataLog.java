@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 
 /**
  * @Description: 系统数据日志
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

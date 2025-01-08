@@ -2,7 +2,7 @@ package org.jeecg.modules.message.handle.enums;
 
 /**
  * 推送状态枚举
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public enum SendMsgStatusEnum {
 

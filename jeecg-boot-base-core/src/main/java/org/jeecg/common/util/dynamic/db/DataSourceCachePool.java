@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  * 数据源缓存池
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 public class DataSourceCachePool {
     /** 数据源连接池缓存【本地 class缓存 - 不支持分布式】 */

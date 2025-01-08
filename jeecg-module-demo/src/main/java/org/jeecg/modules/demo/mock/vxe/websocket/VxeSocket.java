@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * vxe WebSocket，用于实现实时无痕刷新的功能
- * @author: jeecg-boot
+ * @Author: WGAI
  */
 @Slf4j
 @Component

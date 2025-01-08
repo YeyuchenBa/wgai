@@ -17,7 +17,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 
 /**
  * @Description: 部门角色权限
- * @Author: jeecg-boot
+ * @Author: WGAI
  * @Date:   2020-02-12
  * @Version: V1.0
  */
