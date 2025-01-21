@@ -33,7 +33,7 @@
 
 ### 新功能演示视频&GIF
 #### 识别的gif 
-![audio1](wg/shibiegif.gif)
+![shibiegif](wg/shibiegif.gif)
 >[<span style="color: red;">@在线训练演示视频地址：https://www.bilibili.com/video/BV1EJwheEEYq/?vd_source=73d8a30a253a95bdb8b89a5fec80d9b9</span>](https://www.bilibili.com/video/BV1EJwheEEYq/?vd_source=73d8a30a253a95bdb8b89a5fec80d9b9)
 
 >[<span style="color: red;">@在线识别演示视频地址：https://www.bilibili.com/video/BV1fJwhe7E1G/?vd_source=73d8a30a253a95bdb8b89a5fec80d9b9</span>](https://www.bilibili.com/video/BV1fJwhe7E1G/?vd_source=73d8a30a253a95bdb8b89a5fec80d9b9)
@@ -77,7 +77,7 @@
 ###  视频识别 
 >支持第三方接口传递 开启后一直识别不会中断 子线程cpu奔跑需要一定内存量 
 
-![modelBund](wg/startplay.gif)
+![startplay](wg/startplay.gif)
 
 ### 第三方接入
 >报警消息无缝接入接口对接无需集成 支持报警消息、图片、视频流接入
