@@ -29,7 +29,7 @@
 #### 训练结果
 ![audio1](wg/xunlianjieguo.jpg)
 #### 训练日志
-![audio1](wg/moxingkapian.jpg)
+![audio1](wg/xunlianrizhi.jpg)
 
 ### 新功能演示视频&GIF
 
