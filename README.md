@@ -32,8 +32,7 @@
 ![audio1](wg/moxingkapian.jpg)
 
 ### 新功能演示视频&GIF
-#### 识别的gif 
-![shibiegif](wg/shibiegif.gif)
+
 >[<span style="color: red;">@在线训练演示视频地址：https://www.bilibili.com/video/BV1EJwheEEYq/?vd_source=73d8a30a253a95bdb8b89a5fec80d9b9</span>](https://www.bilibili.com/video/BV1EJwheEEYq/?vd_source=73d8a30a253a95bdb8b89a5fec80d9b9)
 
 >[<span style="color: red;">@在线识别演示视频地址：https://www.bilibili.com/video/BV1fJwhe7E1G/?vd_source=73d8a30a253a95bdb8b89a5fec80d9b9</span>](https://www.bilibili.com/video/BV1fJwhe7E1G/?vd_source=73d8a30a253a95bdb8b89a5fec80d9b9)
