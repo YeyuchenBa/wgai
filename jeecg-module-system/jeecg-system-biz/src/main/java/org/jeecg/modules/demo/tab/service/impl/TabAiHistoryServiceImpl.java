@@ -87,7 +87,7 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
 
     @Resource
     RedisTemplate redisTemplate;
-    @Value(value = "${audioPath}")
+    @Value(value = "${audio.path}")
     String pathStatic;//="F:\\JAVAAI\\audio\\sherpa-onnx-conformer-zh-stateless2-2023-05-23\\";
 
     public String WGAIAudio="wgaiaudio";
@@ -122,7 +122,7 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
                     OfflineModelConfig.builder()
                             .setTransducer(transducer)
                             .setTokens(uplopadPath + File.separator + tabAuditSetting.getTokenPath())
-                            .setNumThreads(1)
+                            .setNumThreads(4)
                             .setDebug(true)
                             .setModelingUnit(tabAuditSetting.getModeLing())
                             .build();
@@ -142,6 +142,7 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
             System.out.printf("filename:%s\nresult:%s\n", waveFilename, text);
             stream.release();
             recognizer.release();
+            log.info("当前结束时间{}",System.currentTimeMillis());
             return Result.OK(changeInfo(text));
         }catch (Exception ex){
             ex.printStackTrace();
@@ -224,6 +225,7 @@ public class TabAiHistoryServiceImpl extends ServiceImpl<TabAiHistoryMapper, Tab
         System.out.printf("filename:%s\nresult:%s\n", waveFilename, text);
         stream.release();
         recognizer.release();
+        log.info("当前结束时间{}",System.currentTimeMillis());
         return Result.OK(changeInfo(text));
     }
 

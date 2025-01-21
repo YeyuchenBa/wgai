@@ -126,10 +126,19 @@ public class writeXml {
         }
 
 
-        public boolean writeXml(TabEasyPic tabEasyPic, List<picXml> picXmlList){
+        public static String writeXml(String upload,TabEasyPic tabEasyPic, List<picXml> picXmlList){
+            String pathFile=upload+File.separator+tabEasyPic.getRemake()+File.separator+"xml"+File.separator;
+            String picName=tabEasyPic.getPicName();
+            int index = picName.indexOf(".");
+            String FilePath=pathFile+File.separator+tabEasyPic.getPicName().substring(0,index)+".xml";
+            String rePath=tabEasyPic.getRemake()+File.separator+"xml"+File.separator+tabEasyPic.getPicName().substring(0,index)+".xml";
             try {
 
 
+            File file=new File(pathFile);
+            if(!file.exists()){
+                file.mkdirs();
+            }
             // 初始化 XML 文档构建器
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -141,15 +150,15 @@ public class writeXml {
 
             // 创建 <folder> 和 <filename>
             Element folder = doc.createElement("folder");
-            folder.appendChild(doc.createTextNode("images"));
+            folder.appendChild(doc.createTextNode(tabEasyPic.getRemake()));
             annotation.appendChild(folder);
 
             Element filename = doc.createElement("filename");
-            filename.appendChild(doc.createTextNode("image_001.jpg"));
+            filename.appendChild(doc.createTextNode(tabEasyPic.getPicName()));
             annotation.appendChild(filename);
 
             Element path = doc.createElement("path");
-            path.appendChild(doc.createTextNode("/path/to/image/image_001.jpg"));
+            path.appendChild(doc.createTextNode(upload+File.separator+tabEasyPic.getPicUrl()));
             annotation.appendChild(path);
 
             // <source> 元素
@@ -163,10 +172,10 @@ public class writeXml {
             Element size = doc.createElement("size");
             annotation.appendChild(size);
             Element width = doc.createElement("width");
-            width.appendChild(doc.createTextNode("800"));
+            width.appendChild(doc.createTextNode("700"));
             size.appendChild(width);
             Element height = doc.createElement("height");
-            height.appendChild(doc.createTextNode("600"));
+            height.appendChild(doc.createTextNode("700"));
             size.appendChild(height);
             Element depth = doc.createElement("depth");
             depth.appendChild(doc.createTextNode("3"));
@@ -222,13 +231,13 @@ public class writeXml {
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");  // 不输出 XML 声明
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");  // 美化输出（缩进）
             DOMSource sourceXML = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File("F:\\JAVAAI\\windows_v1.5.1\\output.xml"));
+            StreamResult result = new StreamResult(new File(FilePath));
             transformer.transform(sourceXML, result);
             }catch (Exception ex){
                     ex.printStackTrace();
-                    return  false;
+                    return  null;
             }
-            return true;
+            return rePath;
         }
 
 

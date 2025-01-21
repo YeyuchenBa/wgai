@@ -134,6 +134,7 @@ public class TabAiHistoryController extends JeecgController<TabAiHistory, ITabAi
 	 @GetMapping(value = "/addAudio")
 	 public Result<?> addAudio(@RequestParam(name="path",required=true) String path) {
 //		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 log.info("当前开始时间{}",System.currentTimeMillis());
 		 QueryWrapper<TabAuditSetting> tabAuditSettingQueryWrapper=new QueryWrapper<>();
 		 tabAuditSettingQueryWrapper.eq("is_start",1); //当前使用中的
 		 List<TabAuditSetting> TabAuditSettingList=tabAuditSettingService.list(tabAuditSettingQueryWrapper);

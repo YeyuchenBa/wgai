@@ -4,10 +4,8 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.math.BigDecimal;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.TableLogic;
+
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -71,6 +69,8 @@ public class TabModelTry implements Serializable {
 	@Excel(name = "标签文件", width = 15)
     @ApiModelProperty(value = "标签文件")
     private java.lang.String txtTitle;
+    @ApiModelProperty(value = "标签内容")
+    private java.lang.String txtInfo;
 	/**图片地址*/
 	@Excel(name = "图片地址", width = 15)
     @ApiModelProperty(value = "图片地址")
@@ -83,4 +83,44 @@ public class TabModelTry implements Serializable {
 	@Excel(name = "是否覆盖", width = 15)
     @ApiModelProperty(value = "是否覆盖")
     private java.lang.String isInsert;
+
+    //是否修改图片内容
+    private java.lang.String updatePic;
+    //标注说
+    @ApiModelProperty(value = "标注数量")
+    private java.lang.String makeNumber;
+
+    @ApiModelProperty(value = "图片文件大小")
+    private Double fileSize;
+
+    @ApiModelProperty(value = "模型介绍")
+    private java.lang.String modelTitle;
+    @ApiModelProperty(value = "模型图片")
+    private java.lang.String modelPic;
+
+    @ApiModelProperty(value = "模型文件pt")
+    private java.lang.String modelPt;
+    @ApiModelProperty(value = "模型文件onnx")
+    private java.lang.String modelOnnx;
+
+    @ApiModelProperty(value = "备注")
+    private java.lang.String ramerk;
+
+    @ApiModelProperty(value = "运行状态")
+    private java.lang.Integer runState;
+
+    @ApiModelProperty(value = "训练开始时间")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date runDateStart;
+    @ApiModelProperty(value = "训练结束时间")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date runDateEnd;
+
+    /***
+     * 是否有训练结果  0 没有 1 有
+     */
+    @ApiModelProperty(value = "是否有训练结果")
+    private java.lang.Integer onnxIsok;
 }

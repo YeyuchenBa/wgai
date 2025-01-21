@@ -24,6 +24,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jeecg.modules.demo.train.util.picXml;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -92,9 +93,34 @@ public class TabModelTryController extends JeecgController<TabModelTry, ITabMode
 	@PostMapping(value = "/add")
 	public Result<String> add(@RequestBody TabModelTry tabModelTry) {
 		//tabModelTryService.save(tabModelTry);
-		return tabModelTryService.savePatch( tabModelTry);
+		if(tabModelTry.getUpdatePic().equals("Y")){
+			return tabModelTryService.savePatch( tabModelTry);
+		}else{
+			boolean  bool=tabModelTryService.save(tabModelTry);
+			if(bool){
+				return Result.ok("添加成功");
+			}else{
+				return Result.error("修改失败");
+			}
+		}
+
 	}
-	
+
+
+	 /**
+	  *   添加
+	  *
+	  * @param
+	  * @return
+	  */
+	 @AutoLog(value = "模型预训练-添加标注图片")
+	 @ApiOperation(value="模型预训练-添加标注图片", notes="模型预训练-添加标注图片")
+	 //@RequiresPermissions("org.jeecg.modules.demo:tab_model_try:add")
+	 @PostMapping(value = "/addMarkPic")
+	 public Result<String> addMarkPic(@RequestBody List<picXml>  picXml) {
+		 //tabModelTryService.save(tabModelTry);
+		 return tabModelTryService.saveMake( picXml);
+	 }
 	/**
 	 *  编辑
 	 *
@@ -106,9 +132,18 @@ public class TabModelTryController extends JeecgController<TabModelTry, ITabMode
 	//@RequiresPermissions("org.jeecg.modules.demo:tab_model_try:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<String> edit(@RequestBody TabModelTry tabModelTry) {
-
+		if(tabModelTry.getUpdatePic().equals("Y")){
+			return tabModelTryService.savePatch( tabModelTry);
+		}else{
+			boolean  bool=tabModelTryService.updateById(tabModelTry);
+			if(bool){
+				return Result.ok("修改成功");
+			}else{
+				return Result.error("修改失败");
+			}
+		}
 		// tabModelTryService.updateById(tabModelTry);
-		return tabModelTryService.savePatch( tabModelTry);
+
 	}
 	 @ApiOperation(value="获取模型下所有图片列表", notes="获取模型下所有图片列表")
 	 @GetMapping(value = "/listPic")

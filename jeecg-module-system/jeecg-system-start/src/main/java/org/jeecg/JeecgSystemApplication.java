@@ -12,6 +12,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -29,10 +30,7 @@ public class JeecgSystemApplication extends SpringBootServletInitializer {
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(JeecgSystemApplication.class);
     }
-    @Value("${opencv}")
-    private static String opencvpath;
-    @Value("${third-app.enabled}")
-    private static String opencvpath2;
+
 
 
     public static void main(String[] args) throws UnknownHostException {
@@ -45,14 +43,30 @@ public class JeecgSystemApplication extends SpringBootServletInitializer {
         String port = env.getProperty("server.port");
         String path = oConvertUtils.getString(env.getProperty("server.servlet.context-path"));
         String opencvpath = env.getProperty("opencv");
-        System.load(opencvpath);
+        String audiopath = env.getProperty("audio.dll");
+
+
         log.info("\n----------------------------------------------------------\n\t" +
                 "Application Jeecg-Boot is running! Access URLs:\n\t" +
                 "Local: \t\thttp://localhost:" + port + path + "/\n\t" +
                 "External: \thttp://" + ip + ":" + port + path + "/\n\t" +
                 "Swagger文档: \thttp://" + ip + ":" + port + path + "/doc.html\n\t" +
-                "opencvpath:"+opencvpath+"\n"+
+                "opencvpath:"+opencvpath+"\n\t  "+
+                "audio:"+audiopath+"\n\t  "+
                 "----------------------------------------------------------");
+        File opencv=new File(opencvpath);
+        if(opencv.exists()){
+            System.load(opencvpath);
+        }else{
+            log.error("opencv文件不存在！请检查地址是否正确 或 是否编译opencv");
+        }
+
+        File audio=new File(audiopath);
+        if(audio.exists()){
+            System.load(audiopath);
+        }else{
+            log.error("audio文件不存在！请检查地址是否正确 或 是否编译audio");
+        }
 
     }
 

@@ -1,4 +1,4 @@
-package org.jeecg.modules.demo.easy.entity;
+package org.jeecg.modules.demo.train.entity;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -19,21 +19,21 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * @Description: 训练图片
- * @Author: WGAI
- * @Date:   2024-12-17
+ * @Description: 训练日志
+ * @Author: jeecg-boot
+ * @Date:   2025-01-16
  * @Version: V1.0
  */
 @Data
-@TableName("tab_easy_pic")
+@TableName("tab_train_log")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="tab_easy_pic对象", description="训练图片")
-public class TabEasyPic implements Serializable {
+@ApiModel(value="tab_train_log对象", description="训练日志")
+public class TabTrainLog implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/**主键*/
-	//@TableId(type = IdType.ASSIGN_ID)
+	@TableId(type = IdType.ASSIGN_ID)
     @ApiModelProperty(value = "主键")
     private java.lang.String id;
 	/**创建人*/
@@ -55,36 +55,28 @@ public class TabEasyPic implements Serializable {
 	/**所属部门*/
     @ApiModelProperty(value = "所属部门")
     private java.lang.String sysOrgCode;
-	/**图片类型*/
-	@Excel(name = "图片类型", width = 15, dicCode = "pic_type")
-	@Dict(dicCode = "pic_type")
-    @ApiModelProperty(value = "图片类型")
-    private java.lang.String picType;
-	/**图片名称*/
-	@Excel(name = "图片名称", width = 15)
-    @ApiModelProperty(value = "图片名称")
-    private java.lang.String picName;
-	/**图片地址*/
-	@Excel(name = "图片地址", width = 15)
-    @ApiModelProperty(value = "图片地址")
-    private java.lang.String picUrl;
-	/**备注*/
-	@Excel(name = "备注", width = 15)
-    @ApiModelProperty(value = "备注")
-    private java.lang.String remake;
-	/**是否标注*/
-	@Excel(name = "是否标注", width = 15)
-    @ApiModelProperty(value = "是否标注")
-    private java.lang.String markType;
-	/**标注文件*/
-	@Excel(name = "标注文件", width = 15)
-    @ApiModelProperty(value = "标注文件")
-    private java.lang.String markXml;
-	/**标注标签*/
-	@Excel(name = "标注标签", width = 15)
-    @ApiModelProperty(value = "标注标签")
-    private java.lang.String markTitle;
-    @ApiModelProperty(value = "模型id")
-    @Dict(dictTable = "tab_model_try",dicCode = "id",dicText = "model_name")
+	/**模型名称*/
+	@Excel(name = "模型名称", width = 15, dictTable = "tab_model_try", dicText = "model_name", dicCode = "id")
+	@Dict(dictTable = "tab_model_try", dicText = "model_name", dicCode = "id")
+    @ApiModelProperty(value = "模型名称")
     private java.lang.String modelId;
+	/**日志内容*/
+	@Excel(name = "日志内容", width = 15)
+    @ApiModelProperty(value = "日志内容")
+    private java.lang.String trainLog;
+	/**结果id*/
+	@Excel(name = "结果id", width = 15)
+    @ApiModelProperty(value = "结果id")
+    private java.lang.String resultId;
+
+    /**
+     * 模型保存文件地址
+     */
+    @ApiModelProperty(value = "模型保存文件地址")
+    private java.lang.String cmdPath;
+    /**
+     * 模型保存结果
+     */
+    @ApiModelProperty(value = "模型保存结果")
+    private java.lang.String cmdText;
 }

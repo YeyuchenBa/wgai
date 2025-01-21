@@ -166,7 +166,6 @@ public class AIModelYolo3 {
         log.info("weight地址{}",uploadpath+ File.separator +weight);
         Net net = Dnn.readNetFromONNX(uploadpath+ File.separator +weight);
         net.setPreferableBackend(Dnn.DNN_BACKEND_CUDA);
-        net.setPreferableBackend(Dnn.DNN_TARGET_CUDA);
         // 读取输入图像
         log.info("图片地址{}",uploadpath+ File.separator +picUrl);
         Mat image = Imgcodecs.imread(uploadpath+ File.separator +picUrl);
@@ -178,7 +177,7 @@ public class AIModelYolo3 {
         List<Mat> result = new ArrayList<>();
         List<String> outBlobNames = getOutputNames(net);
         net.forward(result, outBlobNames);
-        System.out.println(Arrays.asList(outBlobNames));
+        log.info("output{}",Arrays.asList(outBlobNames));
         if (result.isEmpty()) {
             System.err.println("Failed to get output from the model.");
             map.put("isOk",false);
@@ -719,7 +718,7 @@ public class AIModelYolo3 {
         }
 
 
-        float confThreshold = 0.3f;
+        float confThreshold = 0.1f;
         float nmsThreshold = 0.4f;
 
         List<Rect2d> boxes2d = new ArrayList<>();
@@ -754,7 +753,7 @@ public class AIModelYolo3 {
                     classIds.add((int)classIdPoint.x);
                     confidences.add(confidence);
                     boxes2d.add(new Rect2d(left, top, width, height));
-                    //  System.out.println("识别到了");
+                    log.info("识别到了");
                 }
             }
         }

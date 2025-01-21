@@ -67,6 +67,7 @@ public class TabEasyPicController extends JeecgController<TabEasyPic, ITabEasyPi
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		QueryWrapper<TabEasyPic> queryWrapper = QueryGenerator.initQueryWrapper(tabEasyPic, req.getParameterMap());
+		queryWrapper.orderByAsc("pic_name");
 		Page<TabEasyPic> page = new Page<TabEasyPic>(pageNo, pageSize);
 		IPage<TabEasyPic> pageList = tabEasyPicService.page(page, queryWrapper);
 		return Result.OK(pageList);

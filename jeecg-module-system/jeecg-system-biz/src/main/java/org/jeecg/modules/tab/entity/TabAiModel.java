@@ -89,7 +89,7 @@ public class TabAiModel implements Serializable {
     @ApiModelProperty(value = "备用")
     private String spareFour;
 	/**备用*/
-	@Excel(name = "备用", width = 15)
-    @ApiModelProperty(value = "备用")
+	@Excel(name = "训练模型id", width = 15)
+    @ApiModelProperty(value = "训练模型id")
     private String spareFive;
 }
