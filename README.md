@@ -21,6 +21,24 @@
 >[<span style="color: red;">@github仓库地址</span>](https://github.com/YeyuchenBa/wgai)
 
 # 新功能截图和功能介绍配置
+### 在线训练&标注内容已经上线开源 支持windwos/linux 国产化服务器部署
+#### 模型列表
+![audio1](wg/moxingkapian.jpg)
+#### 在线标注
+![audio1](wg/zaixianbiaozhu.jpg)
+#### 训练结果
+![audio1](wg/xunlianjieguo.jpg)
+#### 训练日志
+![audio1](wg/moxingkapian.jpg)
+
+### 新功能演示视频&GIF
+#### 识别的gif 
+![audio1](wg/shibiegif.gif)
+>[<span style="color: red;">@在线训练演示视频地址：https://www.bilibili.com/video/BV1EJwheEEYq/?vd_source=73d8a30a253a95bdb8b89a5fec80d9b9</span>](https://www.bilibili.com/video/BV1EJwheEEYq/?vd_source=73d8a30a253a95bdb8b89a5fec80d9b9)
+
+>[<span style="color: red;">@在线识别演示视频地址：https://www.bilibili.com/video/BV1fJwhe7E1G/?vd_source=73d8a30a253a95bdb8b89a5fec80d9b9</span>](https://www.bilibili.com/video/BV1fJwhe7E1G/?vd_source=73d8a30a253a95bdb8b89a5fec80d9b9)
+
+
 ## 语音音识别为本地化部署 并增加热词配置 支持windwos/linux 国产化服务器部署
 ![audio1](wg/audio1.png)
 ![audio2](wg/audio2.png)
@@ -109,13 +127,12 @@
 
 ##为大家低成本部署AI应用添砖加瓦！
 ## 后续更会持续优化视频、图片识别内容
-
+### 技术问题社群内都会回答&&以及各种安装环境配置
+![zfb](wg/shequn.jpg)
 ### 微信交流群
 ## 加微信技术交流群（目前只有微信交流群）
 ![加交流群](wg/chatpic.jpg) 
-捐赠一杯咖啡  点个start  赠送AI武功秘籍
-![wx](wg/wechat.jpg) 
-![zfb](wg/zfb.jpg) 
+
 
 
 
